@@ -1,22 +1,22 @@
-import Link from "next/link";
+"use client";
 
-import { Layout } from "lucide-react";
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import { DataTable } from "@/components/data-table";
 
-import { Button } from "@/components/ui/button";
+import data from "./data.json";
 
-export default function Home() {
+
+export default function Page() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <Link href="/dashboard">
-            <Button>
-              <Layout className="size-4" />
-              Go to dashboard
-            </Button>
-          </Link>
+ <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          <div className="px-4 lg:px-6">
+            <ChartAreaInteractive />
+          </div>
+          <DataTable data={data} />
         </div>
-      </main>
+      </div>
     </div>
   );
 }

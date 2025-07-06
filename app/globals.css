@@ -226,3 +226,21 @@ body {
     @apply !rounded-none !shadow-none;
   }
 }
+
+@layer utilities {
+  @keyframes scan-line-anim {
+    0% {
+      transform: translateY(0%);
+    }
+    100% {
+      transform: translateY(calc(280px - 4px)); /* 280px คือความสูงของกล่อง, 4px คือความสูงของเส้น */
+    }
+  }
+}
+
+#reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  /* object-position: center !important;  <- อาจไม่จำเป็น แต่ใส่ไว้เผื่อก็ได้ */
+}
