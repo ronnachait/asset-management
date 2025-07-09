@@ -9,14 +9,14 @@ const config: Config = {
     extend: {
       // เพิ่ม animation และ keyframes
       animation: {
-        'scan-line': 'scan-line-anim 3s ease-in-out infinite alternate',
+        "scan-line": "scanLine 2s linear infinite",
       },
       keyframes: {
-        'scan-line-anim': {
-          '0%': { transform: 'translateY(-10%)' },
-          '100%': { transform: 'translateY(calc(280px - 10px))' }, // ปรับตามขนาด qrbox
-        }
-      }
+        scanLine: {
+          "0%": { top: "0%" },
+          "100%": { top: "100%" },
+        },
+      },
     },
   },
   plugins: [],

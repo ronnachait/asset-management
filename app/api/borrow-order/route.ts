@@ -35,6 +35,7 @@ export async function GET(request: Request) {
     ),
     notes,
     borrow_images,
+    return_images,
     borrow_items (
       id,
       status,

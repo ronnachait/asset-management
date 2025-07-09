@@ -142,12 +142,12 @@ export default function ApproveOrders() {
                     📌 คำขอ #{index + 1} - (
                     <span
                       className={`font-bold mx-1 ${
-                        order.type === "borrow"
+                        order.type === "borrowed"
                           ? "text-blue-600"
                           : "text-red-600"
                       }`}
                     >
-                      {order.type === "borrow" ? "ยืม" : "คืน"}
+                      {order.type === "borrowed" ? "ยืม" : "คืน"}
                     </span>
                     )
                   </p>

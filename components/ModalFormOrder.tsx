@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
-
+import { toast } from "sonner";
 type items = {
   id: string;
   asset_number: string;
@@ -44,7 +44,7 @@ export default function ModalFormOrder({
   status,
   scannedAssets,
   user,
-  refreshAssets
+  refreshAssets,
 }: ModalFormProps) {
   const [formData, setFormData] = useState<FormDataItem[]>([]);
   const [borrowDate, setBorrowDate] = useState("");
@@ -68,20 +68,19 @@ export default function ModalFormOrder({
     console.log("ข้อมูลอุปกรณ์ที่สแกน:", data);
   }, [scannedAssets]);
 
-
-  const handleBorrowImageChange = (
-    e: ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setFormData((prev) => {
-        const newData = [...prev];
-        newData[index].borrowImage = file;
-        return newData;
-      });
-    }
-  };
+  // const handleBorrowImageChange = (
+  //   e: ChangeEvent<HTMLInputElement>,
+  //   index: number
+  // ) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     const file = e.target.files[0];
+  //     setFormData((prev) => {
+  //       const newData = [...prev];
+  //       newData[index].borrowImage = file;
+  //       return newData;
+  //     });
+  //   }
+  // };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -101,93 +100,91 @@ export default function ModalFormOrder({
     setPreviewUrl("");
     setBorrowDate("");
     setReturnDate("");
-    setFormData([]);
     onClose();
   };
-const handleSubmit = async () => {
-  if (!user) {
-    alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-    return;
-  }
-
-  const form = new FormData();
-
-  if (status === "borrow") {
-    if (!borrowDate || !returnDate) {
-      alert("กรุณากรอกวันที่ยืมและกำหนดคืน");
+  const handleSubmit = async () => {
+    if (!user) {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
       return;
     }
-    form.append("borrow_date", borrowDate);
-    form.append("return_date", returnDate);
-    form.append("notes", notes);
-  }
 
-  form.append("status", status);
-  form.append("user_name", user.name || "");
-  form.append("email", user.email || "");
-  form.append("team", user.team || "");
-  form.append("phone_number", user.phone_number);
-  form.append("access_level", user.access_level);
+    const form = new FormData();
 
-  form.append(
-    "assets",
-    JSON.stringify(
-      formData.map((asset) => ({
-        id: asset.id,
-        asset_number: asset.asset_number,
-        asset_name: asset.asset_name,
-        scannedId: asset.scannedId,
-        asset_location: asset.asset_location,
-        status: asset.status,
-      }))
-    )
-  );
-
-  formData.forEach((asset, index) => {
-    if (asset.borrowImage) {
-      form.append(`borrow_image_${index}`, asset.borrowImage);
-      form.append(`borrow_image_id_${index}`, asset.id);
+    if (status === "borrow") {
+      if (!borrowDate || !returnDate) {
+        alert("กรุณากรอกวันที่ยืมและกำหนดคืน");
+        return;
+      }
+      form.append("borrow_date", borrowDate);
+      form.append("return_date", returnDate);
+      form.append("notes", notes);
     }
-  });
 
-  if (file) {
-    form.append("summary_image", file);
-  }
+    form.append("status", status);
+    form.append("user_name", user.name || "");
+    form.append("email", user.email || "");
+    form.append("team", user.team || "");
+    form.append("phone_number", user.phone_number);
+    form.append("access_level", user.access_level);
 
-  // กำหนด URL API ตามสถานะ
-  const apiUrl = status === "borrow" ? "/api/borrow/create" : "/api/borrow/update";
+    form.append(
+      "assets",
+      JSON.stringify(
+        formData.map((asset) => ({
+          id: asset.id,
+          asset_number: asset.asset_number,
+          asset_name: asset.asset_name,
+          scannedId: asset.scannedId,
+          asset_location: asset.asset_location,
+          status: asset.status,
+        }))
+      )
+    );
 
-  try {
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      body: form,
+    formData.forEach((asset, index) => {
+      if (asset.borrowImage) {
+        form.append(`borrow_image_${index}`, asset.borrowImage);
+        form.append(`borrow_image_id_${index}`, asset.id);
+      }
     });
 
-    const result = await res.json();
-
-    if (res.ok) {
-      alert("บันทึกข้อมูลเรียบร้อยแล้ว");
-      console.log("ผลลัพธ์จากเซิร์ฟเวอร์:", result);
-      // รีเซ็ตข้อมูลหลังจากส่งสำเร็จ
-      setFile(null);
-      setPreviewUrl("");
-      setBorrowDate("");
-      setReturnDate("");
-      setFormData([]);
-      // เรียกฟังก์ชันรีเฟรชข้อมูลอุปกรณ์
-      refreshAssets();
-      // ปิด modal
-      handleClose();
-    } else {
-      console.error("เกิดข้อผิดพลาด:", result);
-      alert("ไม่สามารถส่งข้อมูลได้");
+    if (file) {
+      form.append("summary_image", file);
     }
-  } catch (error) {
-    console.error("เกิดข้อผิดพลาด:", error);
-    alert("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้");
-  }
-};
 
+    // กำหนด URL API ตามสถานะ
+    const apiUrl =
+      status === "borrow" ? "/api/borrow/create" : "/api/borrow/update";
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        body: form,
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        toast.success("ทำรายการสำเร็จ");
+        // รีเซ็ตข้อมูลหลังจากส่งสำเร็จ
+        setFile(null);
+        setPreviewUrl("");
+        setBorrowDate("");
+        setReturnDate("");
+        setFormData([]);
+        // เรียกฟังก์ชันรีเฟรชข้อมูลอุปกรณ์
+        refreshAssets();
+        // ปิด modal
+        handleClose();
+      } else {
+        console.error("เกิดข้อผิดพลาด:", result);
+        alert("ไม่สามารถส่งข้อมูลได้");
+      }
+    } catch (error) {
+      console.error("เกิดข้อผิดพลาด:", error);
+      alert("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -199,9 +196,18 @@ const handleSubmit = async () => {
         </h2>
 
         <section className="mb-8 text-gray-800 text-sm sm:text-base flex flex-col gap-2">
-          <p><span className="font-semibold">ผู้ยืมอุปกรณ์ :</span> {user?.name ?? "ไม่พบข้อมูลผู้ใช้"}</p>
-          <p><span className="font-semibold">อีเมล :</span> {user?.email ?? "ไม่พบข้อมูลอีเมล"}</p>
-          <p><span className="font-semibold">ทีม :</span> {user?.team?.toUpperCase() ?? "ไม่พบข้อมูลทีม"}</p>
+          <p>
+            <span className="font-semibold">ผู้ยืมอุปกรณ์ :</span>{" "}
+            {user?.name ?? "ไม่พบข้อมูลผู้ใช้"}
+          </p>
+          <p>
+            <span className="font-semibold">อีเมล :</span>{" "}
+            {user?.email ?? "ไม่พบข้อมูลอีเมล"}
+          </p>
+          <p>
+            <span className="font-semibold">ทีม :</span>{" "}
+            {user?.team?.toUpperCase() ?? "ไม่พบข้อมูลทีม"}
+          </p>
 
           {status === "borrow" && (
             <div className="flex flex-col sm:flex-row gap-4 mt-2">
@@ -227,56 +233,44 @@ const handleSubmit = async () => {
           )}
         </section>
 
-        <table className="w-full border border-gray-300 text-left text-sm">
-          <thead className="bg-gray-100 text-gray-700 font-semibold">
-            <tr>
-              <th className="border px-3 py-2 w-12">#</th>
-              <th className="border px-3 py-2">รหัสอุปกรณ์</th>
-              <th className="border px-3 py-2">ชื่ออุปกรณ์</th>
-              <th className="border px-3 py-2 text-center w-24">ภาพ</th>
-              <th className="border px-3 py-2 text-center w-36">รูปถ่ายตอนยืม</th>
-            </tr>
-          </thead>
-          <tbody>
-            {formData.map((asset, index) => (
-              <tr key={asset.id} className="break-inside-avoid">
-                <td className="border px-3 py-2 text-center">{index + 1}</td>
-                <td className="border px-3 py-2">{asset.asset_number}</td>
-                <td className="border px-3 py-2">{asset.asset_name}</td>
-                <td className="border px-2 py-2 text-center flex justify-center items-center">
-                  <Image
-                    width={48}
-                    height={48}
-                    loading="lazy"
-                    unoptimized
-                    src={asset.image ?? "/part1.jpg"}
-                    alt="asset"
-                    className="w-12 h-12 object-cover border rounded"
-                  />
-                </td>
-                <td className="border px-3 py-2 text-center">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleBorrowImageChange(e, index)}
-                    className="text-sm"
-                  />
-                  {asset.borrowImage && (
-                    <div className="mt-1">
-                      <Image
-                        src={URL.createObjectURL(asset.borrowImage)}
-                        alt="preview"
-                        width={48}
-                        height={48}
-                        className="object-cover rounded border"
-                      />
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ul className="space-y-4">
+          {formData.map((asset, index) => (
+            <li
+              key={asset.asset_number + "-" + index}
+              className="flex items-center gap-4 p-4 rounded-md shadow-md bg-gradient-to-br from-white to-blue-50 border border-blue-100 transition hover:shadow-lg"
+            >
+              {/* รูปภาพ */}
+              <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 shadow-inner flex-shrink-0 bg-white">
+                <Image
+                  src={asset.image ?? "/part1.jpg"}
+                  alt={`asset ${asset.asset_number}`}
+                  width={64}
+                  height={64}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+
+              {/* รายละเอียด */}
+              <div className="flex-1 min-w-0 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-500 font-semibold">
+                    #{index + 1}
+                  </span>
+                  <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+                    {asset.asset_number}
+                  </span>
+                </div>
+
+                <div className="text-sm font-semibold text-gray-800 truncate">
+                  📦 {asset.asset_name}
+                </div>
+                <div className="text-xs text-gray-600 italic">
+                  สถานะ: พร้อมใช้งาน
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
 
         <div className="mt-6">
           <label className="font-medium mb-1 block">อัปโหลดรูปภาพ</label>
@@ -288,9 +282,13 @@ const handleSubmit = async () => {
           />
           {previewUrl && (
             <div>
-              <p className="text-xs text-gray-500 mt-2">รูปภาพที่อัปโหลดจะใช้เป็นหลักฐานการยืม กรุณาอัปโหลดรูปที่ชัดเจน</p>
+              <p className="text-xs text-gray-500 mt-2">
+                รูปภาพที่อัปโหลดจะใช้เป็นหลักฐานการยืม กรุณาอัปโหลดรูปที่ชัดเจน
+              </p>
               <div className="flex flex-col justify-center items-center mt-4 border-t p-4 shadow-sm relative">
-                <label className="font-medium mb-1 block mt-4">รูปภาพตัวอย่าง:</label>
+                <label className="font-medium mb-1 block mt-4">
+                  รูปภาพตัวอย่าง:
+                </label>
                 <Image
                   width={192}
                   height={192}
@@ -299,14 +297,21 @@ const handleSubmit = async () => {
                   alt="Preview"
                   className="mt-4 w-48 h-48 object-cover rounded"
                 />
-                <span className="absolute right-2 top-2 text-red-500 hover:text-red-700 cursor-pointer" onClick={handleFileRemove}><X /></span>
+                <span
+                  className="absolute right-2 top-2 text-red-500 hover:text-red-700 cursor-pointer"
+                  onClick={handleFileRemove}
+                >
+                  <X />
+                </span>
               </div>
             </div>
           )}
         </div>
 
         <div className="mt-6">
-          <label htmlFor="note" className="font-medium mb-1 block">หมายเหตุเพิ่มเติม:</label>
+          <label htmlFor="note" className="font-medium mb-1 block">
+            หมายเหตุเพิ่มเติม:
+          </label>
           <textarea
             id="note"
             value={notes}
@@ -319,8 +324,20 @@ const handleSubmit = async () => {
         </div>
 
         <div className="flex justify-end gap-4 mt-6 pt-4 border-t border-gray-200">
-          <button onClick={handleClose} className="px-5 py-2 text-sm font-medium rounded border border-gray-300 hover:bg-gray-100 text-gray-700 cursor-pointer" type="button">ยกเลิก</button>
-          <button onClick={handleSubmit} className="px-6 py-2 text-sm font-medium rounded bg-blue-600 text-white hover:bg-blue-700 cursor-pointer" type="button">ส่งข้อมูล</button>
+          <button
+            onClick={handleClose}
+            className="px-5 py-2 text-sm font-medium rounded border border-gray-300 hover:bg-gray-100 text-gray-700 cursor-pointer"
+            type="button"
+          >
+            ยกเลิก
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="px-6 py-2 text-sm font-medium rounded bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+            type="button"
+          >
+            ส่งข้อมูล
+          </button>
         </div>
       </div>
     </div>

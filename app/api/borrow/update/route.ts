@@ -46,6 +46,30 @@ export async function POST(request: Request) {
       );
     }
 
+    const file = formData.get("summary_image") as File | null;
+
+    // รออัปโหลดไฟล์และรับ URL
+    const uploadedImageUrl = await (async () => {
+      if (file && file.size > 0 && file.type.startsWith("image/")) {
+        const filePath = `return/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from("borrow-images")
+          .upload(filePath, file);
+
+        if (uploadError) {
+          throw new Error(uploadError.message);
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("borrow-images")
+          .getPublicUrl(filePath);
+
+        return publicUrlData?.publicUrl || null;
+      }
+      return null;
+    })();
+    console.log("Uploaded image URL:", uploadedImageUrl);
+
     const results: ResultItem[] = await Promise.all(
       parsedAssets.map(async (asset): Promise<ResultItem> => {
         const { id: assetId } = asset;
@@ -69,6 +93,7 @@ export async function POST(request: Request) {
           .update({
             status: "pending",
             return_date: new Date().toISOString(),
+            return_images: uploadedImageUrl,
           })
           .eq("id", borrowItemId);
 

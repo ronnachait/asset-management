@@ -1,5 +1,5 @@
 "use client";
-import { TableComponent } from "@/components/Table-asset";
+import { TableComponent } from "@/app/equipment/Table-asset";
 
 export default function BorrowSelection() {
 

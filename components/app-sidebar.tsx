@@ -156,7 +156,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const res = await fetch("/api/borrow/pending-orders");
     const result = await res.json();
 
-    console.log("setRequestCount",result)
+    console.log("setRequestCount", result);
     if (res.ok) {
       setRequestCount(result.length);
     }
@@ -166,6 +166,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     getUser();
     fetchUserOrders();
     fetchPendingOrders();
+  }, []);
+
+  useEffect(() => {
+    const channel = new BroadcastChannel("order_updates");
+
+    channel.onmessage = (event) => {
+      if (event.data === "update") {
+        fetchUserOrders();
+        fetchPendingOrders();
+      }
+    };
+
+    return () => {
+      channel.close();
+    };
   }, []);
 
   return (

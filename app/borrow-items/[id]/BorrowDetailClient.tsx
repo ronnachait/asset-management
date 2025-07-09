@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-
+import { Archive, ArchiveRestore } from "lucide-react";
+import { format } from "date-fns";
+import { th } from "date-fns/locale";
 type Asset = {
   id: string;
   asset_number: string;
@@ -32,11 +34,12 @@ type BorrowOrder = {
   return_completed_at?: string | null;
   notes?: string | null;
   borrow_images?: string | null;
+  return_images?: string | null;
   status:
     | "borrowed"
     | "returned"
     | "done"
-    | "cancelled"
+    | "rejected"
     | "pending"
     | "partially_returned";
   borrow_items: BorrowItem[];
@@ -50,6 +53,7 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
     const fetchOrdersById = async () => {
       const res = await fetch(`/api/borrow-order?id=${OrderId}`);
       const result = await res.json();
+      console.log("result", result);
       if (res.ok) setOrders(result.data);
       else console.error(result.message);
     };
@@ -72,6 +76,12 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
     borrow_items,
     notes,
   } = orders;
+
+  // ฟังก์ชันช่วยฟอร์แมตวันที่แบบไทย
+  const formatThaiDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return format(date, "d MMM yyyy ", { locale: th });
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 bg-gray-50 rounded-xl shadow-md space-y-8">
@@ -123,57 +133,70 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
       </div>
 
       {/* รายละเอียดการยืม */}
+      {/* รายละเอียดการยืม */}
       <div className="bg-white p-5 rounded-lg shadow-sm border">
         <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
           📅 รายละเอียดการยืม
         </h2>
-        <div className="grid sm:grid-cols-2 gap-4 text-gray-800">
-          <p>
-            <strong>วันที่ยืม:</strong> {new Date(borrow_date).toLocaleString()}
-          </p>
-          <p>
-            <strong>กำหนดคืน:</strong>{" "}
-            {return_due_date ? new Date(return_due_date).toLocaleString() : "-"}
-          </p>
-          <p>
-            <strong>วันที่คืนจริง:</strong>{" "}
-            {return_completed_at
-              ? new Date(return_completed_at).toLocaleString()
-              : "-"}
-          </p>
-          <p>
-            <strong>สถานะ:</strong>{" "}
-            <span
-              className={`px-3 py-1 rounded-full font-medium ${
-                status === "done"
-                  ? "bg-green-200 text-green-800"
+        <div className="grid sm:grid-cols-2 gap-4 text-gray-800 text-sm sm:text-base ">
+          <div className="flex items-center gap-2">
+            <span className="text-blue-500">📅</span>
+            <p>
+              <strong className="text-gray-600">วันที่ยืม:</strong>{" "}
+              {formatThaiDate(borrow_date)}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-green-500">📆</span>
+            <p>
+              <strong className="text-gray-600">กำหนดคืน:</strong>{" "}
+              {return_due_date ? formatThaiDate(return_due_date) : "-"}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-purple-500">✅</span>
+            <p>
+              <strong className="text-gray-600">วันที่คืนจริง:</strong>{" "}
+              {return_completed_at ? formatThaiDate(return_completed_at) : "-"}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-indigo-500">📌</span>
+            <p>
+              <strong className="text-gray-600">สถานะ:</strong>{" "}
+              <span
+                className={`inline-block px-3 py-1 rounded-full font-medium text-sm ${
+                  status === "done"
+                    ? "bg-green-200 text-green-800"
+                    : status === "borrowed"
+                    ? "bg-yellow-200 text-yellow-800"
+                    : status === "rejected"
+                    ? "bg-red-200 text-red-800"
+                    : status === "returned"
+                    ? "bg-blue-200 text-blue-800"
+                    : status === "partially_returned"
+                    ? "bg-orange-200 text-orange-800"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+              >
+                {status === "done"
+                  ? "เสร็จสิ้น"
                   : status === "borrowed"
-                  ? "bg-yellow-200 text-yellow-800"
-                  : status === "cancelled"
-                  ? "bg-red-200 text-red-800"
+                  ? "กำลังยืม"
+                  : status === "rejected"
+                  ? "ยกเลิก"
+                  : status === "returned"
+                  ? "คืนแล้ว"
+                  : status === "pending"
+                  ? "รอดำเนินการ"
                   : status === "partially_returned"
-                  ? "bg-orange-200 text-orange-800"
-                  : "bg-blue-200 text-blue-800"
-              }`}
-            >
-              {status === "done"
-                ? "เสร็จสิ้น"
-                : status === "borrowed"
-                ? "กำลังยืม"
-                : status === "cancelled"
-                ? "ยกเลิก"
-                : status === "returned"
-                ? "คืนแล้ว"
-                : status === "pending"
-                ? "รอดำเนินการ"
-                : status === "partially_returned"
-                ? "คืนอุปกรณ์ไม่ครบ"
-                : "กำลังดำเนินการ"}
-            </span>
-          </p>
+                  ? "คืนอุปกรณ์ไม่ครบ"
+                  : "กำลังดำเนินการ"}
+              </span>
+            </p>
+          </div>
         </div>
       </div>
-      {/* รูปภาพประกอบ */}
       {/* ภาพถ่ายก่อนยืม */}
       {orders.borrow_images && (
         <div className="bg-white p-5 rounded-lg shadow-sm border">
@@ -187,15 +210,47 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
                 className="relative w-full h-60 rounded-lg overflow-hidden border shadow-sm"
               >
                 <Image
-                  src={url.trim()}
+                  src={url?.trim() || "/image-not-found.png"}
                   alt={`Borrow Image ${index + 1}`}
                   fill
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/image-not-found.png";
+                  }}
                   className="object-cover hover:scale-105 transition-transform duration-300"
                   sizes="(max-width: 640px) 100vw, 50vw"
                   priority={index === 0}
                 />
+
+                <div className=" absolute top-2 right-2 text-white bg-blue-500 px-1 py-0.5 rounded-md flex justify-center items-center gap-1">
+                  <Archive className="w-5 h-5" />
+                  <span>Borrowed</span>
+                </div>
               </div>
             ))}
+            {orders.return_images &&
+              orders.return_images
+                .split(",")
+                .filter((url) => url.trim()) // กรองค่าว่าง
+                .map((url, index) => (
+                  <div
+                    key={`return-${index}`}
+                    className="relative w-full h-60 rounded-lg overflow-hidden border shadow-sm"
+                  >
+                    <Image
+                      src={url.trim() || "/image-not-found.png"}
+                      alt={`Return Image ${index + 1}`}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      priority={false}
+                    />
+                    <div className=" absolute top-2 right-2 text-white bg-amber-500 px-1 py-0.5 rounded-md flex justify-center items-center gap-1">
+                      <ArchiveRestore className="w-5 h-5" />
+                      <span>Returned</span>
+                    </div>
+                  </div>
+                ))}
           </div>
         </div>
       )}
@@ -230,6 +285,8 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
                       ? "bg-blue-200 text-blue-800"
                       : item.status === "repair"
                       ? "bg-red-200 text-red-800"
+                      : item.status === "rejected"
+                      ? "bg-red-200 text-red-800"
                       : "bg-gray-200 text-gray-800"
                   }`}
                 >
@@ -241,6 +298,8 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
                     ? "รอดำเนินการ"
                     : item.status === "repair"
                     ? "อยู่ระหว่างซ่อม"
+                    : item.status === "rejected"
+                    ? "ยกเลิก"
                     : "ยังไม่คืน"}
                 </span>
               </div>
@@ -255,17 +314,6 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
           📝 หมายเหตุ
         </h2>
         <p className="text-gray-700 mb-4">{notes || "ไม่มีหมายเหตุ"}</p>
-
-        {/* <label htmlFor="noteInput" className="block text-sm text-gray-600 mb-2">
-          หมายเหตุเพิ่มเติม:
-        </label>
-        <input
-          id="noteInput"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="พิมพ์หมายเหตุเพิ่มเติม..."
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        /> */}
       </div>
     </div>
   );

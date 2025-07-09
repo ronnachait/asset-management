@@ -29,17 +29,22 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("assets")
-    .select(`
+    .select(
+      `
       id,
       asset_number,
       asset_name,
+      asset_location,
+      asset_image,
+      destroyed,
       borrow_items!fk_borrowitems_assets (
         id,
         status,
         order_id,
         return_date
       )
-    `)
+    `
+    )
     .order("asset_number", { ascending: true });
 
   if (error) {
@@ -70,7 +75,6 @@ export async function GET() {
     };
   });
 
-  console.log("GET items-asset Success", processedData);
   return NextResponse.json(
     { message: "GET items-asset Success", data: processedData },
     { status: 200 }

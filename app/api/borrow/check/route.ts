@@ -25,7 +25,7 @@ export async function GET(request: Request) {
       { status: 404 }
     );
   }
-
+  const assetLevelStatus = item.destroyed; // จากตาราง assets
   // เช็คว่ายืมอยู่ไหม
   const { data: borrowItem, error: borrowError } = await supabase
     .from("borrow_items")
@@ -49,13 +49,16 @@ export async function GET(request: Request) {
     return: "available",
   };
 
-  const currentStatus = borrowItem
+  const borrowStatus = borrowItem
     ? statusMap[borrowItem.status] || "available"
     : "available";
+  console.log("assetLevelStatus:", assetLevelStatus);
+  const currentStatus =
+    assetLevelStatus === true ? "destroyed" : borrowStatus;
 
   return NextResponse.json({
     ...item,
-    status: currentStatus,
+    status: currentStatus, // แสดงเป็น 'destroyed' ถ้าทำลายแล้ว
     borrow_date: borrowItem?.orders?.borrow_date ?? null,
     return_due_date: borrowItem?.orders?.return_due_date ?? null,
   });

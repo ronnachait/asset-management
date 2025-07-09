@@ -11,14 +11,16 @@ export async function GET() {
       { status: 500 }
     );
   }
-const { data, error } = await supabase
-  .from("orders")
-  .select(`
+  const { data, error } = await supabase
+    .from("orders")
+    .select(
+      `
     id,
     borrow_date,
     status,
     return_due_date,
     return_completed_at,
+    created_at,
     accounts (
       id,
       name,
@@ -28,6 +30,7 @@ const { data, error } = await supabase
     ),
     notes,
     borrow_images,
+    return_images,
     borrow_items (
       id,
       status,
@@ -37,10 +40,9 @@ const { data, error } = await supabase
         asset_name
       )
     )
-  `)
-  .order("borrow_date", { ascending: false });
-
-
+  `
+    )
+    .order("borrow_date", { ascending: false });
 
   if (error) {
     console.log("GET Data borrow-orders Error!", error);
@@ -50,6 +52,7 @@ const { data, error } = await supabase
     );
   }
 
+  console.log(data);
   return NextResponse.json(
     { message: "GET borrow-orders Success", data },
     { status: 200 }
