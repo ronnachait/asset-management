@@ -40,7 +40,7 @@ export default function DestroyDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="bg-red-400 text-white px-3 py-2 rounded hover:bg-red-600 flex items-center justify-center cursor-pointer">
+        <button className="bg-red-400 text-white px-3 py-2 rounded hover:bg-red-600 flex items-center justify-center cursor-pointer dark:bg-red-500 dark:hover:bg-red-600">
           <Trash2 className="w-5 h-5" />
         </button>
       </DialogTrigger>

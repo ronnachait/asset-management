@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 
@@ -119,29 +118,25 @@ export default function ApproveOrders() {
   }, []);
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">
-        📋 รายการใบคำขอยืมที่รออนุมัติ
-      </h1>
-
+    <div className="p-4 sm:p-6 max-w-6xl mx-auto">
       {loading ? (
-        <p className="text-gray-500">⏳ กำลังโหลด...</p>
+        <p className="text-gray-500 text-center">⏳ กำลังโหลด...</p>
       ) : orders.length === 0 ? (
-        <p className="text-gray-400">ไม่มีใบคำขอที่รออนุมัติ</p>
+        <p className="text-gray-400 text-center">ไม่มีใบคำขอที่รออนุมัติ</p>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {orders.map((order, index) => (
             <div
               key={order.id}
-              className="border border-gray-200 rounded-xl shadow-sm p-5 bg-white"
+              className="border border-gray-200 rounded-xl shadow-md p-5 bg-white space-y-4"
             >
-              {/* ข้อมูลคำขอ */}
-              <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-2">
-                <div className="space-y-1 text-gray-700">
-                  <p className="font-semibold text-lg">
-                    📌 คำขอ #{index + 1} - (
+              {/* 🔹 ส่วนข้อมูลคำขอ */}
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                <div className="text-gray-700 space-y-1">
+                  <h2 className="text-lg font-semibold text-blue-700">
+                    📌 คำขอ #{index + 1} -{" "}
                     <span
-                      className={`font-bold mx-1 ${
+                      className={`inline-block font-bold ${
                         order.type === "borrowed"
                           ? "text-blue-600"
                           : "text-red-600"
@@ -149,9 +144,8 @@ export default function ApproveOrders() {
                     >
                       {order.type === "borrowed" ? "ยืม" : "คืน"}
                     </span>
-                    )
-                  </p>
-                  <p className="text-sm flex flex-wrap gap-4 text-gray-600">
+                  </h2>
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                     <span>
                       👤 ผู้ยืม:{" "}
                       <span className="font-medium">
@@ -164,34 +158,34 @@ export default function ApproveOrders() {
                         {order.borrower?.email || "ไม่ระบุ"}
                       </span>
                     </span>
-                  </p>
-                  <p className="text-sm flex flex-wrap gap-4 text-gray-600">
+                  </div>
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                     <span>
                       📅 ยืม:{" "}
-                      {format(new Date(order.borrow_date), "dd MMMM yyyy", {
+                      {format(new Date(order.borrow_date), "dd MMM yyyy", {
                         locale: th,
                       })}
                     </span>
                     <span>
                       📅 คืน:{" "}
-                      {format(new Date(order.return_due_date), "dd MMMM yyyy", {
+                      {format(new Date(order.return_due_date), "dd MMM yyyy", {
                         locale: th,
                       })}
                     </span>
-                  </p>
+                  </div>
                 </div>
               </div>
 
-              {/* ตารางอุปกรณ์ */}
-              <div className="overflow-x-auto rounded-lg border mb-4">
+              {/* 🔹 ตารางอุปกรณ์ */}
+              <div className="overflow-x-auto rounded-lg border">
                 <table className="min-w-full text-sm text-gray-800">
-                  <thead className="bg-gray-50 border-b text-gray-600">
+                  <thead className="bg-gray-50 border-b text-gray-600 text-left">
                     <tr>
-                      <th className="px-4 py-2 text-left">#</th>
-                      <th className="px-4 py-2 text-left">รหัสอุปกรณ์</th>
-                      <th className="px-4 py-2 text-left">ชื่ออุปกรณ์</th>
-                      <th className="px-4 py-2 text-left">สถานะ</th>
-                      <th className="px-4 py-2 text-left">ตรวจสอบ</th>
+                      <th className="px-4 py-2">#</th>
+                      <th className="px-4 py-2">รหัสอุปกรณ์</th>
+                      <th className="px-4 py-2">ชื่ออุปกรณ์</th>
+                      <th className="px-4 py-2">สถานะ</th>
+                      <th className="px-4 py-2">ตรวจสอบ</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
@@ -219,38 +213,44 @@ export default function ApproveOrders() {
                             {item.status}
                           </span>
                         </td>
-                        <td className="px-4 py-2 space-x-4">
-                          <label className="inline-flex items-center space-x-1 cursor-pointer">
-                            <input
-                              type="radio"
-                              name={`check_${order.id}_${item.id}`}
-                              className="accent-green-600"
-                              checked={
-                                checkedItems[order.id]?.[item.id]?.status ===
-                                "normal"
-                              }
-                              onChange={() =>
-                                toggleCheckStatus(order.id, item.id, "normal")
-                              }
-                            />
-                            <span>ปกติ</span>
-                          </label>
+                        <td className="px-4 py-2 space-y-1 min-w-[140px]">
+                          <div className="flex gap-2">
+                            <label className="inline-flex items-center gap-1 cursor-pointer">
+                              <input
+                                type="radio"
+                                name={`check_${order.id}_${item.id}`}
+                                className="accent-green-600"
+                                checked={
+                                  checkedItems[order.id]?.[item.id]?.status ===
+                                  "normal"
+                                }
+                                onChange={() =>
+                                  toggleCheckStatus(order.id, item.id, "normal")
+                                }
+                              />
+                              <span>ปกติ</span>
+                            </label>
 
-                          <label className="inline-flex items-center space-x-1 cursor-pointer">
-                            <input
-                              type="radio"
-                              name={`check_${order.id}_${item.id}`}
-                              className="accent-red-600"
-                              checked={
-                                checkedItems[order.id]?.[item.id]?.status ===
-                                "damaged"
-                              }
-                              onChange={() =>
-                                toggleCheckStatus(order.id, item.id, "damaged")
-                              }
-                            />
-                            <span>เสียหาย</span>
-                          </label>
+                            <label className="inline-flex items-center gap-1 cursor-pointer">
+                              <input
+                                type="radio"
+                                name={`check_${order.id}_${item.id}`}
+                                className="accent-red-600"
+                                checked={
+                                  checkedItems[order.id]?.[item.id]?.status ===
+                                  "damaged"
+                                }
+                                onChange={() =>
+                                  toggleCheckStatus(
+                                    order.id,
+                                    item.id,
+                                    "damaged"
+                                  )
+                                }
+                              />
+                              <span>เสียหาย</span>
+                            </label>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -258,7 +258,7 @@ export default function ApproveOrders() {
                 </table>
               </div>
 
-              {/* หมายเหตุรวมของ order */}
+              {/* 🔹 หมายเหตุ */}
               <div>
                 <label
                   htmlFor={`note_${order.id}`}
@@ -275,29 +275,29 @@ export default function ApproveOrders() {
                   onChange={(e) => updateOrderNote(order.id, e.target.value)}
                 />
               </div>
-              {order.status && order.status === "pending" ? (
-                <div className="mt-4 flex gap-2 justify-end">
-                  <Button
-                    size="sm"
-                    className="bg-green-600 hover:bg-green-700 text-white"
+
+              {/* 🔹 ปุ่มการอนุมัติ */}
+              {order.status === "pending" ? (
+                <div className="flex flex-col sm:flex-row gap-2 justify-end">
+                  <button
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm shadow cursor-pointer"
                     onClick={() =>
                       updateOrderStatus(order.id, "approve", order.type)
                     }
                   >
                     ✅ อนุมัติทั้งชุด
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
+                  </button>
+                  <button
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm shadow cursor-pointer"
                     onClick={() =>
                       updateOrderStatus(order.id, "reject", order.type)
                     }
                   >
                     ❌ ปฏิเสธทั้งชุด
-                  </Button>
+                  </button>
                 </div>
               ) : (
-                <div className="mt-4 text-right text-sm text-red-600 font-medium">
+                <div className="text-sm text-red-600 font-medium text-right">
                   ❗ ไม่สามารถอนุมัติได้ เพราะยังคืนอุปกรณ์ไม่ครบ
                 </div>
               )}

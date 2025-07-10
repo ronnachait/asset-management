@@ -95,7 +95,7 @@ export default function AddAssetModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-600 text-white hover:bg-blue-700 cursor-pointer gap-2">
+        <Button className="bg-blue-600 text-white hover:bg-blue-700 cursor-pointer gap-2 dark:bg-blue-500 dark:hover:bg-blue-600">
           <PackagePlus className="w-4 h-4" />
           เพิ่มอุปกรณ์
         </Button>

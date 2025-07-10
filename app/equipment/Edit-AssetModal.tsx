@@ -158,7 +158,7 @@ export default function EditAssetModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="cursor-pointer bg-amber-400 hover:bg-amber-500 px-3 py-2 rounded-md text-white  flex items-center justify-center">
+        <div className="cursor-pointer bg-amber-400 hover:bg-amber-500 px-3 py-2 rounded-md text-white  flex items-center justify-center dark:hover:bg-amber-600 dark:bg-amber-500">
           <SquarePen className="w-5 h-5" />
         </div>
       </DialogTrigger>

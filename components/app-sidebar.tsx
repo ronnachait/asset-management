@@ -2,16 +2,19 @@
 
 import * as React from "react";
 import {
-  Home,
   Package,
   Users,
   ClipboardList,
   QrCode,
   UserCheck,
   UserCog,
-  BadgeAlert,
   UserPen,
   BellRing,
+  LayoutDashboard,
+  FileCheck2,
+  Repeat2,
+  ActivitySquare,
+  PackageCheck,
 } from "lucide-react";
 
 import { useEffect, useState } from "react";
@@ -34,7 +37,7 @@ const menuItems = [
   {
     title: "หน้าหลัก",
     url: "/",
-    icon: Home,
+    icon: LayoutDashboard,
   },
   {
     title: "สแกน QR Code",
@@ -52,22 +55,22 @@ const staffItems = [
   {
     title: "คำขอยืมอุปกรณ์",
     url: "/borrow-orders",
-    icon: ClipboardList,
+    icon: FileCheck2,
   },
   {
     title: "รายการยืม-คืน",
     url: "/transactions",
-    icon: ClipboardList,
+    icon: Repeat2,
   },
   {
-    title: "รายการอุปกรณ์",
+    title: "จัดการอุปกรณ์",
     url: "/equipment",
-    icon: Package,
+    icon: PackageCheck,
   },
   {
     title: "การสอบเทียบอุปกรณ์",
     url: "/calibration",
-    icon: BadgeAlert,
+    icon: ActivitySquare,
   },
 ];
 
@@ -193,14 +196,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="h-14 data-[slot=sidebar-menu-button]:!p-3transition rounded-lg"
             >
               <div className="flex items-center space-x-4">
-                <div className="rounded-lg flex items-center justify-center shadow-md">
-                  <Package className="w-6 h-6 " />
+                <div className="rounded-lg flex items-center justify-center shadow-md dark:shadow-none">
+                  <Package className="w-6 h-6 dark:text-white" />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <h2 className="text-xl font-bold text-slate-800 leading-tight">
+                  <h2 className="text-xl font-bold text-slate-800 leading-tight dark:text-white">
                     ระบบยืมคืน (AMIS)
                   </h2>
-                  <p className="text-md text-slate-500 leading-none">
+                  <p className="text-md text-slate-500 leading-none dark:text-slate-400">
                     บริหารสินทรัพย์และสินค้าคงคลัง
                   </p>
                 </div>
@@ -211,7 +214,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 font-prompt text-xs uppercase tracking-wider mb-3 font-semibold flex items-center gap-2">
+          <SidebarGroupLabel className="text-slate-500 font-prompt text-xs uppercase tracking-wider mb-3 font-semibold flex items-center gap-2 dark:text-slate-400">
             <UserCheck /> user zone
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -226,7 +229,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     className="w-full flex items-center justify-start hover:bg-blue-100 hover:text-blue-800 transition-all duration-150 rounded-lg px-3 py-2 space-x-3"
                   >
                     <a href={item.url}>
-                      <item.icon className="w-5 h-5 text-gray-500" />
+                      <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                       <span className="font-medium text-sm">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
@@ -272,7 +275,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         href={item.url}
                         className="flex items-center space-x-3 py-3 px-3"
                       >
-                        <item.icon className="w-5 h-5 text-gray-500" />
+                        <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                         <span className="font-medium text-sm">
                           {item.title}
                         </span>
@@ -322,7 +325,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         href={item.url}
                         className="flex items-center space-x-3 py-3 px-3"
                       >
-                        <item.icon className="w-5 h-5 text-gray-500" />
+                        <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                         <span className="font-medium text-sm">
                           {item.title}
                         </span>

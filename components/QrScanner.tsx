@@ -369,115 +369,114 @@ export default function QrScanner({ data, onCancel }: QrScannerProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 flex items-start justify-center px-4 py-8">
-      <div className="bg-white rounded-2xl p-4 sm:p-8 max-w-md w-full space-y-6 shadow-md ring-1 ring-gray-200">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-3">
-            <div
-              className={`w-10 h-10 flex items-center justify-center rounded-full text-white text-lg font-semibold ${
-                data === "borrow" ? "bg-green-600" : "bg-yellow-500"
-              }`}
-              aria-label={data === "borrow" ? "โหมดยืม" : "โหมดคืน"}
-            >
-              {data === "borrow" ? "ยืม" : "คืน"}
-            </div>
-            <div>
-              <div className="text-xs text-gray-500">โหมดการทำงาน</div>
-              <div className="text-sm font-semibold text-gray-900">
-                {data === "borrow" ? "ยืมอุปกรณ์" : "คืนอุปกรณ์"}
-              </div>
+    <div className="bg-white rounded-2xl p-4 sm:p-8 max-w-md w-full space-y-6 shadow-md ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-3">
+          <div
+            className={`w-10 h-10 flex items-center justify-center rounded-full  text-white text-lg font-semibold ${
+              data === "borrow" ? "bg-green-600" : "bg-yellow-500"
+            }`}
+            aria-label={data === "borrow" ? "โหมดยืม" : "โหมดคืน"}
+          >
+            {data === "borrow" ? "ยืม" : "คืน"}
+          </div>
+          <div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">โหมดการทำงาน</div>
+            <div className="text-sm font-semibold text-gray-900 dark:text-white">
+              {data === "borrow" ? "ยืมอุปกรณ์" : "คืนอุปกรณ์"}
             </div>
           </div>
-          <button
-            onClick={() => onCancel()}
-            className="text-sm text-gray-600 hover:text-red-600 font-semibold transition-colors"
-            title="เปลี่ยนโหมด"
-            type="button"
-          >
-            เปลี่ยน
-          </button>
         </div>
+        <button
+          onClick={() => onCancel()}
+          className="text-sm text-gray-600 hover:text-red-600 font-semibold transition-colors dark:text-gray-400 dark:hover:text-red-400"
+          title="เปลี่ยนโหมด"
+          type="button"
+        >
+          เปลี่ยน
+        </button>
+      </div>
 
-        {/* กล้องและสถานะสแกน */}
-        <div className="flex flex-col items-center justify-center space-y-6">
-          {/* กล่องแสดงภาพกล้อง */}
-          <div className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden border-[6px] border-blue-500 shadow-2xl bg-black">
-            <div id="reader" className="absolute inset-0 w-full h-full" />
-            <button
-              onClick={switchCamera}
-              disabled={isSwitching}
-              className={`absolute top-3 right-4 z-20 px-3 py-1.5 rounded-lg font-semibold shadow-md transition duration-200 active:scale-95 focus:outline-none focus:ring-4
+      {/* กล้องและสถานะสแกน */}
+      <div className="flex flex-col items-center justify-center space-y-6">
+        {/* กล่องแสดงภาพกล้อง */}
+        <div className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden border-[6px] border-blue-500 shadow-2xl bg-black dark:bg-gray-800 dark:border-blue-600">
+          <div id="reader" className="absolute inset-0 w-full h-full" />
+          <button
+            onClick={switchCamera}
+            disabled={isSwitching}
+            className={`absolute top-3 right-4 z-20 px-3 py-1.5 rounded-lg font-semibold shadow-md transition duration-200 active:scale-95 focus:outline-none focus:ring-4
             ${
               facingMode === "environment"
-                ? "bg-blue-600 hover:bg-blue-700 focus:ring-blue-400"
-                : "bg-green-600 hover:bg-green-700 focus:ring-green-400"
+                ? "bg-blue-600 hover:bg-blue-700 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-500"
+                : "bg-green-600 hover:bg-green-700 focus:ring-green-400 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-500"
             }
                   text-white flex items-center gap-2 text-sm
                 `}
+            type="button"
+            aria-label="สลับกล้องหน้า-หลัง"
+          >
+            สลับกล้อง ({facingMode === "environment" ? "หลัง" : "หน้า"})
+          </button>
+
+          {scanning ? (
+            <div className="absolute inset-0 z-10 pointer-events-none">
+              {/* เส้นสแกน */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-cyan-400 animate-scan-line shadow-cyan-400" />
+
+              {/* กรอบมุมทั้ง 4 */}
+            </div>
+          ) : (
+            <div className="absolute inset-0 z-10 bg-black/70 flex flex-col items-center justify-center text-white p-4 text-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-12 h-12 mb-3 text-white/60"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                <path d="m12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" />
+                <path d="m2 2 20 20" />
+              </svg>
+              <h3 className="font-semibold text-lg">กล้องปิดอยู่</h3>
+              <p className="text-sm text-gray-300">
+                กดปุ่มเริ่มสแกนเพื่อเปิดกล้อง
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* ปุ่มควบคุม */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm justify-center">
+          {scanning ? (
+            <button
+              onClick={handleStopScan}
+              disabled={isStopping || !isScannerReady}
+              className="bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white font-semibold py-3 px-10 rounded-xl shadow-lg transition duration-200 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-400 dark:focus:ring-red-500"
               type="button"
-              aria-label="สลับกล้องหน้า-หลัง"
+              aria-label="ปิดกล้องสแกน QR Code"
             >
-              สลับกล้อง ({facingMode === "environment" ? "หลัง" : "หน้า"})
+              ❌ ปิดกล้อง
             </button>
+          ) : (
+            <button
+              onClick={handleStartScan}
+              disabled={isStarting || isScannerReady}
+              className="w-full sm:w-auto px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold shadow-lg transition duration-200 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-400 dark:focus:ring-green-500"
+              type="button"
+              aria-label="เริ่มสแกน QR Code"
+            >
+              {scannedAssets.length > 0 ? "🔄 สแกนชิ้นต่อไป" : "📷 เริ่มสแกน"}
+            </button>
+          )}
+        </div>
 
-            {scanning ? (
-              <div className="absolute inset-0 z-10 pointer-events-none">
-                {/* เส้นสแกน */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-cyan-400 animate-scan-line shadow-cyan-400" />
-
-                {/* กรอบมุมทั้ง 4 */}
-              </div>
-            ) : (
-              <div className="absolute inset-0 z-10 bg-black/70 flex flex-col items-center justify-center text-white p-4 text-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-12 h-12 mb-3 text-white/60"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-                  <path d="m12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" />
-                  <path d="m2 2 20 20" />
-                </svg>
-                <h3 className="font-semibold text-lg">กล้องปิดอยู่</h3>
-                <p className="text-sm text-gray-300">
-                  กดปุ่มเริ่มสแกนเพื่อเปิดกล้อง
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* ปุ่มควบคุม */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm justify-center">
-            {scanning ? (
-              <button
-                onClick={handleStopScan}
-                disabled={isStopping || !isScannerReady}
-                className="bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white font-semibold py-3 px-10 rounded-xl shadow-lg transition duration-200 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-400"
-                type="button"
-                aria-label="ปิดกล้องสแกน QR Code"
-              >
-                ❌ ปิดกล้อง
-              </button>
-            ) : (
-              <button
-                onClick={handleStartScan}
-                disabled={isStarting || isScannerReady}
-                className="w-full sm:w-auto px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold shadow-lg transition duration-200 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-400"
-                type="button"
-                aria-label="เริ่มสแกน QR Code"
-              >
-                {scannedAssets.length > 0 ? "🔄 สแกนชิ้นต่อไป" : "📷 เริ่มสแกน"}
-              </button>
-            )}
-          </div>
-
-          {/* ข้อความสถานะ */}
-          <p
-            className={`text-center text-base font-medium transition-colors min-h-[2.5rem] px-6 py-2 rounded-lg shadow-sm
+        {/* ข้อความสถานะ */}
+        <p
+          className={`text-center text-base font-medium transition-colors min-h-[2.5rem] px-6 py-2 rounded-lg shadow-sm
     ${
       success
         ? "text-green-700 bg-green-100 shadow-green-300"
@@ -488,136 +487,135 @@ export default function QrScanner({ data, onCancel }: QrScannerProps) {
         : "text-red-700 bg-red-100 shadow-red-300"
     }
   `}
-            aria-live="polite"
-          >
-            {message}
+          aria-live="polite"
+        >
+          {message}
+        </p>
+
+        {scanning && (
+          <p className="text-yellow-600 text-sm text-center mt-1 select-none">
+            🔍 กำลังสแกน QR Code...
           </p>
+        )}
+      </div>
 
-          {scanning && (
-            <p className="text-yellow-600 text-sm text-center mt-1 select-none">
-              🔍 กำลังสแกน QR Code...
-            </p>
-          )}
-        </div>
-
-        {/* รายการอุปกรณ์ที่สแกนแล้ว */}
-        <ul className="space-y-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400 scrollbar-track-gray-100 bg-white rounded-lg p-2 ">
-          {scannedAssets.length > 0 && (
-            <p className="text-lg font-semibold flex justify-center items-center gap-2 mb-2 text-gray-800 select-none">
-              <List className="w-5 h-5 text-blue-500" />
-              <span>
-                รายการ{" "}
-                <span className="underline decoration-dotted">
-                  {data === "borrow" ? "ยืมอุปกรณ์" : "คืนอุปกรณ์"}
-                </span>
-              </span>
-            </p>
-          )}
-
-          {scannedAssets.map((asset, index) => (
-            <li
-              key={asset.asset_number + "-" + index}
-              className="flex items-center gap-4 p-4 rounded-md shadow-md bg-gradient-to-br from-white to-blue-50 border border-blue-100 transition hover:shadow-lg"
-            >
-              {/* รูปภาพ */}
-              <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 shadow-inner flex-shrink-0 bg-white">
-                <Image
-                  src={asset.image ?? "/part1.jpg"}
-                  alt={`asset ${asset.asset_number}`}
-                  width={64}
-                  height={64}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-
-              {/* รายละเอียด */}
-              <div className="flex-1 min-w-0 space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 font-semibold">
-                    #{index + 1}
-                  </span>
-                  <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
-                    {asset.asset_number}
-                  </span>
-                </div>
-
-                <div className="text-sm font-semibold text-gray-800 truncate">
-                  📦 {asset.asset_name}
-                </div>
-                <div className="text-xs text-gray-600 italic">
-                  สถานะ: พร้อมใช้งาน
-                </div>
-              </div>
-
-              {/* Remove button */}
-              <button
-                onClick={() => {
-                  setScannedAssets((prev) => {
-                    const updated = prev.filter(
-                      (item) => item.asset_number !== asset.asset_number
-                    );
-                    // ถ้าไม่มีอันที่เหลือใน list แล้ว ค่อยลบจาก scannedIdsRef
-                    const stillExists = updated.some(
-                      (item) => item.asset_number === asset.asset_number
-                    );
-                    if (!stillExists) {
-                      scannedIdsRef.current.delete(asset.asset_number);
-                    }
-
-                    setMessage(`รายการ ${asset.asset_number} ถูกยกเลิก`);
-                    setSuccess(false);
-                    if (updated.length === 0) {
-                      setMessage("ยังไม่มีรายการอุปกรณ์ที่สแกน");
-                    }
-                    return updated;
-                  });
-                }}
-                className="text-red-500 hover:text-red-700 text-lg font-bold p-1.5 rounded-full transition hover:bg-red-100 cursor-pointer"
-                title="ยกเลิกรายการนี้"
-                aria-label={`ยกเลิกอุปกรณ์ ${asset.asset_number}`}
-                type="button"
-              >
-                <X />
-              </button>
-            </li>
-          ))}
-        </ul>
-
+      {/* รายการอุปกรณ์ที่สแกนแล้ว */}
+      <ul className="space-y-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400 scrollbar-track-gray-100 bg-white rounded-lg p-2 dark:bg-gray-800">
         {scannedAssets.length > 0 && (
-          <button
-            onClick={() => {
-              handleOpenModal();
-              setMessage(
-                data === "borrow"
-                  ? "กำลังยืนยันการยืมอุปกรณ์..."
-                  : "กำลังยืนยันการคืนอุปกรณ์..."
-              );
-              setSuccess(false);
-            }}
-            className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-green-500"
-            type="button"
-            aria-label="ยืนยันการยืม/คืนอุปกรณ์"
-          >
-            ✅ ยืนยันการ{data === "borrow" ? "ยืม" : "คืน"} (
-            {scannedAssets.length} รายการ)
-          </button>
+          <p className="text-lg font-semibold flex justify-center items-center gap-2 mb-2 text-gray-800 select-none">
+            <List className="w-5 h-5 text-blue-500" />
+            <span>
+              รายการ{" "}
+              <span className="underline decoration-dotted">
+                {data === "borrow" ? "ยืมอุปกรณ์" : "คืนอุปกรณ์"}
+              </span>
+            </span>
+          </p>
         )}
 
-        <ModalFormOrder
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          scannedAssets={scannedAssets}
-          user={user ?? null}
-          status={data === "borrow" ? "borrow" : "return"}
-          refreshAssets={() => {
-            setScannedAssets([]);
-            scannedIdsRef.current.clear();
-            setMessage("รายการอุปกรณ์ถูกรีเซ็ต");
+        {scannedAssets.map((asset, index) => (
+          <li
+            key={asset.asset_number + "-" + index}
+            className="flex items-center gap-4 p-4 rounded-md shadow-md bg-gradient-to-br from-white to-blue-50 border border-blue-100 transition hover:shadow-lg"
+          >
+            {/* รูปภาพ */}
+            <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 shadow-inner flex-shrink-0 bg-white">
+              <Image
+                src={asset.image ?? "/part1.jpg"}
+                alt={`asset ${asset.asset_number}`}
+                width={64}
+                height={64}
+                className="object-cover w-full h-full"
+              />
+            </div>
+
+            {/* รายละเอียด */}
+            <div className="flex-1 min-w-0 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-500 font-semibold">
+                  #{index + 1}
+                </span>
+                <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+                  {asset.asset_number}
+                </span>
+              </div>
+
+              <div className="text-sm font-semibold text-gray-800 truncate">
+                📦 {asset.asset_name}
+              </div>
+              <div className="text-xs text-gray-600 italic">
+                สถานะ: พร้อมใช้งาน
+              </div>
+            </div>
+
+            {/* Remove button */}
+            <button
+              onClick={() => {
+                setScannedAssets((prev) => {
+                  const updated = prev.filter(
+                    (item) => item.asset_number !== asset.asset_number
+                  );
+                  // ถ้าไม่มีอันที่เหลือใน list แล้ว ค่อยลบจาก scannedIdsRef
+                  const stillExists = updated.some(
+                    (item) => item.asset_number === asset.asset_number
+                  );
+                  if (!stillExists) {
+                    scannedIdsRef.current.delete(asset.asset_number);
+                  }
+
+                  setMessage(`รายการ ${asset.asset_number} ถูกยกเลิก`);
+                  setSuccess(false);
+                  if (updated.length === 0) {
+                    setMessage("ยังไม่มีรายการอุปกรณ์ที่สแกน");
+                  }
+                  return updated;
+                });
+              }}
+              className="text-red-500 hover:text-red-700 text-lg font-bold p-1.5 rounded-full transition hover:bg-red-100 cursor-pointer"
+              title="ยกเลิกรายการนี้"
+              aria-label={`ยกเลิกอุปกรณ์ ${asset.asset_number}`}
+              type="button"
+            >
+              <X />
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {scannedAssets.length > 0 && (
+        <button
+          onClick={() => {
+            handleOpenModal();
+            setMessage(
+              data === "borrow"
+                ? "กำลังยืนยันการยืมอุปกรณ์..."
+                : "กำลังยืนยันการคืนอุปกรณ์..."
+            );
             setSuccess(false);
-            notifyOtherTabs();
           }}
-        />
-      </div>
+          className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-green-500"
+          type="button"
+          aria-label="ยืนยันการยืม/คืนอุปกรณ์"
+        >
+          ✅ ยืนยันการ{data === "borrow" ? "ยืม" : "คืน"} (
+          {scannedAssets.length} รายการ)
+        </button>
+      )}
+
+      <ModalFormOrder
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        scannedAssets={scannedAssets}
+        user={user ?? null}
+        status={data === "borrow" ? "borrow" : "return"}
+        refreshAssets={() => {
+          setScannedAssets([]);
+          scannedIdsRef.current.clear();
+          setMessage("รายการอุปกรณ์ถูกรีเซ็ต");
+          setSuccess(false);
+          notifyOtherTabs();
+        }}
+      />
     </div>
   );
 }

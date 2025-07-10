@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { Trash2, User } from "lucide-react";
+import { Trash2, User, UserCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -62,161 +62,103 @@ export default function UserManagement() {
     }
   };
 
-  // const handleAddUser = async () => {
-  //   const { email, name } = newUser;
-  //   if (!email || !name) {
-  //     toast.warning("กรุณากรอกชื่อและอีเมล");
-  //     return;
-  //   }
-  //   const res = await fetch("/api/users", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(newUser),
-  //   });
-  //   if (res.ok) {
-  //     toast.success("เพิ่มผู้ใช้เรียบร้อย");
-  //     setNewUser({
-  //       email: "",
-  //       name: "",
-  //       team: "",
-  //       phone_number: 0,
-  //       access_level: 1,
-  //     });
-  //     fetchUsers();
-  //   } else {
-  //     toast.error("เพิ่มผู้ใช้ไม่สำเร็จ");
-  //   }
-  // };
-
   return (
-    <div className="max-w-6xl mx-auto py-10 px-4">
-      <h2 className="text-2xl font-bold mb-6 text-blue-700">
-        👥 จัดการผู้ใช้งาน
-      </h2>
-
-      {/* ฟอร์มเพิ่มผู้ใช้ใหม่
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 bg-white p-6 rounded-lg shadow border">
-        <Input
-          placeholder="อีเมล"
-          value={newUser.email}
-          onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-          icon={<Mail className="text-gray-400 w-5 h-5" />}
-        />
-        <Input
-          placeholder="ชื่อผู้ใช้"
-          value={newUser.name}
-          onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-          icon={<UserIcon className="text-gray-400 w-5 h-5" />}
-        />
-        <Input
-          placeholder="ทีม"
-          value={newUser.team}
-          onChange={(e) => setNewUser({ ...newUser, team: e.target.value })}
-        />
-        <Input
-          placeholder="เบอร์โทรศัพท์"
-          type="number"
-          value={newUser.phone_number}
-          onChange={(e) => setNewUser({ ...newUser, phone_number: Number(e.target.value) })}
-          icon={<Phone className="text-gray-400 w-5 h-5" />}
-        />
-        <div>
-          <Select
-            value={String(newUser.access_level)}
-            onValueChange={(val) =>
-              setNewUser({ ...newUser, access_level: Number(val) })
-            }
+    <div className="max-w-6xl mx-auto py-10 px-4 space-y-6">
+      {/* 👉 Card Layout สำหรับทุกขนาดหน้าจอ */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {users.map((user) => (
+          <div
+            key={user.id}
+            className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 p-5 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 transition-transform hover:scale-[1.01]"
           >
-            <SelectTrigger>
-              <SelectValue placeholder="สิทธิ์ผู้ใช้" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Viewer</SelectItem>
-              <SelectItem value="70">Staff</SelectItem>
-              <SelectItem value="99">Admin</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Button onClick={handleAddUser} className="w-full mt-auto">
-            <Plus className="mr-2 w-4 h-4" />
-            เพิ่มผู้ใช้
-          </Button>
-        </div>
-      </div> */}
+            {/* ชื่อ + อีเมล */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-white p-3 rounded-full shadow">
+                <UserCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                  {user.name}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {user.email}
+                </p>
+              </div>
+            </div>
 
-      {/* ตารางแสดงผู้ใช้งาน */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow border">
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
-            <tr>
-              <th className="px-4 py-3">ชื่อ</th>
-              <th className="px-4 py-3">อีเมล</th>
-              <th className="px-4 py-3">ทีม</th>
-              <th className="px-4 py-3">เบอร์</th>
-              <th className="px-4 py-3">สิทธิ์</th>
-              <th className="px-4 py-3">การใช้งาน</th>
-              <th className="px-4 py-3 text-center">ลบ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="border-t hover:bg-gray-50">
-                <td className="px-4 py-2">{user.name}</td>
-                <td className="px-4 py-2">{user.email}</td>
-                <td className="px-4 py-2">{user.team || "-"}</td>
-                <td className="px-4 py-2">{user.phone_number || "-"}</td>
-                <td className="px-4 py-2">
-                  <Select
-                    value={String(user.access_level)}
-                    onValueChange={(val) =>
-                      handleRoleChange(user.id, Number(val))
-                    }
-                  >
-                    <SelectTrigger className="w-28">
-                      <SelectValue placeholder="สิทธิ์" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">Viewer</SelectItem>
-                      <SelectItem value="70">Staff</SelectItem>
-                      <SelectItem value="99">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </td>
-                <td className="px-4 py-2 text-center">
-                  <Select
-                    value={String(user.action ?? "")}
-                    onValueChange={async (val) => {
-                      await fetch(`/api/users/${user.id}`, {
-                        method: "PATCH",
-                        body: JSON.stringify({ action: val === "true" }),
-                      });
-                      fetchUsers();
-                    }}
-                  >
-                    <SelectTrigger className="w-28">
-                      <SelectValue placeholder="อนุมัติ" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">✅ อนุมัติ</SelectItem>
-                      <SelectItem value="false">❌ ไม่อนุมัติ</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </td>
+            {/* รายละเอียด */}
+            <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1 mb-4">
+              <p>
+                📁 <span className="font-medium">ทีม:</span> {user.team || "–"}
+              </p>
+              <p>
+                📞 <span className="font-medium">เบอร์:</span>{" "}
+                {user.phone_number || "–"}
+              </p>
+            </div>
 
-                <td className="px-4 py-2 text-center">
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            {/* การจัดการสิทธิ์ */}
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="text-xs text-gray-500 dark:text-gray-400">
+                  สิทธิ์การใช้งาน
+                </label>
+                <Select
+                  value={String(user.access_level)}
+                  onValueChange={(val) =>
+                    handleRoleChange(user.id, Number(val))
+                  }
+                >
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue placeholder="เลือกสิทธิ์" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">👀 Viewer</SelectItem>
+                    <SelectItem value="70">🛠️ Staff</SelectItem>
+                    <SelectItem value="99">👑 Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-xs text-gray-500 dark:text-gray-400">
+                  สถานะการใช้งาน
+                </label>
+                <Select
+                  value={String(user.action ?? "")}
+                  onValueChange={async (val) => {
+                    await fetch(`/api/users/${user.id}`, {
+                      method: "PATCH",
+                      body: JSON.stringify({ action: val === "true" }),
+                    });
+                    fetchUsers();
+                  }}
+                >
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue placeholder="สถานะ" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">✅ อนุมัติ</SelectItem>
+                    <SelectItem value="false">❌ ไม่อนุมัติ</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* ปุ่มลบ */}
+              <div className="flex justify-end">
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="mt-3"
+                  onClick={() => handleDelete(user.id)}
+                >
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  ลบผู้ใช้งาน
+                </Button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

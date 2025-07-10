@@ -81,10 +81,11 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-10 bg-gray-50 rounded-xl shadow-md space-y-8">
+    <div className="max-w-4xl mx-auto px-6 py-10 bg-gray-50 rounded-xl shadow-md space-y-8 dark:bg-gray-800">
+      {/* 🔙 ปุ่มย้อนกลับ */}
       <button
-        onClick={() => router.push("/transactions")}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 font-medium rounded-lg hover:bg-blue-200 transition mb-4 shadow-sm cursor-pointer"
+        onClick={() => router.push("/borrow-items")}
+        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 font-medium rounded-lg hover:bg-blue-200 transition mb-4 shadow-sm cursor-pointer dark:bg-blue-900 dark:text-blue-400 dark:hover:bg-blue-800"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -102,75 +103,103 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
         </svg>
         ย้อนกลับ
       </button>
-      <h1 className="text-3xl font-bold text-blue-700 border-b pb-4">
+
+      <h1 className="text-2xl font-bold text-blue-700 border-b pb-4 md:text-3xl dark:text-blue-300">
         รายละเอียดคำสั่งยืมอุปกรณ์
       </h1>
 
       {/* ข้อมูลผู้ยืม */}
-      <div className="bg-white p-5 rounded-lg shadow-sm border">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-all">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
           👤 ข้อมูลผู้ยืม
         </h2>
-        <div className="grid sm:grid-cols-2 gap-4 text-gray-800">
-          <p>
-            <strong>ชื่อ:</strong> {accounts.name}
-          </p>
-          <p>
-            <strong>อีเมล:</strong> {accounts.email}
-          </p>
-          <p>
-            <strong>ทีม:</strong> {accounts.team}
-          </p>
-          <p>
-            <strong>เบอร์โทร:</strong> {accounts.phone_number}
-          </p>
+
+        <div className="grid sm:grid-cols-2 gap-5 text-sm sm:text-base text-gray-700 dark:text-gray-300">
+          <div className="space-y-1">
+            <p className="font-medium text-gray-500 dark:text-gray-400">ชื่อ</p>
+            <p className="text-gray-800 dark:text-gray-100">{accounts.name}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="font-medium text-gray-500 dark:text-gray-400">
+              อีเมล
+            </p>
+            <p className="text-gray-800 dark:text-gray-100">{accounts.email}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="font-medium text-gray-500 dark:text-gray-400">ทีม</p>
+            <p className="text-gray-800 dark:text-gray-100">{accounts.team}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="font-medium text-gray-500 dark:text-gray-400">
+              เบอร์โทร
+            </p>
+            <p className="text-gray-800 dark:text-gray-100">
+              {accounts.phone_number}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* รายละเอียดการยืม */}
-      <div className="bg-white p-5 rounded-lg shadow-sm border">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-all">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
           📅 รายละเอียดการยืม
         </h2>
-        <div className="grid sm:grid-cols-2 gap-4 text-gray-800 text-sm sm:text-base ">
+
+        <div className="grid sm:grid-cols-2 gap-5 text-sm sm:text-base text-gray-800 dark:text-gray-300">
+          {/* วันที่ยืม */}
           <div className="flex items-center gap-2">
             <span className="text-blue-500">📅</span>
             <p>
-              <strong className="text-gray-600">วันที่ยืม:</strong>{" "}
+              <span className="font-medium text-gray-600 dark:text-gray-400">
+                วันที่ยืม:
+              </span>{" "}
               {formatThaiDate(borrow_date)}
             </p>
           </div>
+
+          {/* กำหนดคืน */}
           <div className="flex items-center gap-2">
             <span className="text-green-500">📆</span>
             <p>
-              <strong className="text-gray-600">กำหนดคืน:</strong>{" "}
+              <span className="font-medium text-gray-600 dark:text-gray-400">
+                กำหนดคืน:
+              </span>{" "}
               {return_due_date ? formatThaiDate(return_due_date) : "-"}
             </p>
           </div>
+
+          {/* วันที่คืนจริง */}
           <div className="flex items-center gap-2">
             <span className="text-purple-500">✅</span>
             <p>
-              <strong className="text-gray-600">วันที่คืนจริง:</strong>{" "}
+              <span className="font-medium text-gray-600 dark:text-gray-400">
+                วันที่คืนจริง:
+              </span>{" "}
               {return_completed_at ? formatThaiDate(return_completed_at) : "-"}
             </p>
           </div>
+
+          {/* สถานะ */}
           <div className="flex items-center gap-2">
             <span className="text-indigo-500">📌</span>
-            <p>
-              <strong className="text-gray-600">สถานะ:</strong>{" "}
+            <p className="flex items-center gap-2">
+              <span className="font-medium text-gray-600 dark:text-gray-400">
+                สถานะ:
+              </span>
               <span
-                className={`inline-block px-3 py-1 rounded-full font-medium text-sm ${
+                className={`inline-block px-3 py-1 rounded-full font-medium text-sm
+                ${
                   status === "done"
-                    ? "bg-green-200 text-green-800"
+                    ? "bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-100"
                     : status === "borrowed"
-                    ? "bg-yellow-200 text-yellow-800"
+                    ? "bg-yellow-200 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100"
                     : status === "rejected"
-                    ? "bg-red-200 text-red-800"
+                    ? "bg-red-200 text-red-800 dark:bg-red-700 dark:text-red-100"
                     : status === "returned"
-                    ? "bg-blue-200 text-blue-800"
+                    ? "bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-100"
                     : status === "partially_returned"
-                    ? "bg-orange-200 text-orange-800"
-                    : "bg-gray-200 text-gray-800"
+                    ? "bg-orange-200 text-orange-800 dark:bg-orange-700 dark:text-orange-100"
+                    : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
                 }`}
               >
                 {status === "done"
@@ -191,87 +220,100 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
           </div>
         </div>
       </div>
+
       {orders.borrow_images && (
-        <div className="bg-white p-5 rounded-lg shadow-sm border">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-            🖼️ ภาพถ่ายก่อนยืม
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-all">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+            🖼️ ภาพถ่ายก่อนยืม / คืน
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* ภาพก่อนยืม */}
             {orders.borrow_images.split(",").map((url, index) => (
               <div
                 key={index}
-                className="relative w-full h-60 rounded-lg overflow-hidden border shadow-sm"
+                className="relative w-full h-60 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm"
               >
                 <Image
-                  src={url.trim()}
+                  src={url.trim() || "/image-not-found.png"}
                   alt={`Borrow Image ${index + 1}`}
                   fill
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/image-not-found.png";
+                  }}
                   className="object-cover hover:scale-105 transition-transform duration-300"
                   sizes="(max-width: 640px) 100vw, 50vw"
                   priority={index === 0}
                 />
+                <div className="absolute top-2 right-2 text-white bg-blue-600 px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1 shadow">
+                  <Archive className="w-4 h-4" />
+                  ยืม
+                </div>
+              </div>
+            ))}
 
-                <div className=" absolute top-2 right-2 text-white bg-blue-500 px-1 py-0.5 rounded-md flex justify-center items-center gap-1">
-                  <Archive className="w-5 h-5" />
-                  <span>Borrowed</span>
-                </div>
-              </div>
-            ))}
-            {(orders.return_images ?? "").split(",").map((url, index) => (
-              <div
-                key={index}
-                className="relative w-full h-60 rounded-lg overflow-hidden border shadow-sm"
-              >
-                <Image
-                  src={url?.trim() || "/image-not-found.png"}
-                  alt={`Borrow Image ${index + 1}`}
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 640px) 100vw, 50vw"
-                  priority={index === 0}
-                />
-                <div className=" absolute top-2 right-2 text-white bg-amber-500 px-1 py-0.5 rounded-md flex justify-center items-center gap-1">
-                  <ArchiveRestore className="w-5 h-5" />
-                  <span>Returned</span>
-                </div>
-              </div>
-            ))}
+            {/* ภาพตอนคืน */}
+            {orders.return_images &&
+              orders.return_images
+                .split(",")
+                .filter((url) => url.trim())
+                .map((url, index) => (
+                  <div
+                    key={`return-${index}`}
+                    className="relative w-full h-60 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm"
+                  >
+                    <Image
+                      src={url.trim() || "/image-not-found.png"}
+                      alt={`Return Image ${index + 1}`}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                    />
+                    <div className="absolute top-2 right-2 text-white bg-amber-600 px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1 shadow">
+                      <ArchiveRestore className="w-4 h-4" />
+                      คืน
+                    </div>
+                  </div>
+                ))}
           </div>
         </div>
       )}
+
       {/* รายการอุปกรณ์ */}
-      <div className="bg-white p-5 rounded-lg shadow-sm border">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-all">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
           📋 รายการอุปกรณ์ที่ยืม
         </h2>
+
         <ul className="space-y-4">
           {borrow_items.map((item: BorrowItem, index: number) => (
             <li
               key={index}
-              className="bg-gray-100 p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between"
+              className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between border border-gray-200 dark:border-gray-700"
             >
               <div>
-                <p className="font-semibold text-gray-800">
-                  {item.asset?.asset_name}
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  {item.asset?.asset_name || "-"}
                 </p>
-                <p className="text-sm text-gray-600">
-                  รหัส: {item.asset?.asset_number}
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  รหัส: {item.asset?.asset_number || "-"}
                 </p>
               </div>
-              <div>
+              <div className="mt-2 sm:mt-0">
                 <span
                   className={`text-sm px-3 py-1 rounded-full font-medium ${
                     item.status === "returned"
-                      ? "bg-green-200 text-green-800"
+                      ? "bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-100"
                       : item.status === "borrowed"
-                      ? "bg-yellow-200 text-yellow-800"
+                      ? "bg-yellow-200 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100"
                       : item.status === "pending"
-                      ? "bg-blue-200 text-blue-800"
+                      ? "bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-100"
                       : item.status === "repair"
-                      ? "bg-red-200 text-red-800"
+                      ? "bg-red-200 text-red-800 dark:bg-red-700 dark:text-red-100"
                       : item.status === "rejected"
-                      ? "bg-red-200 text-red-800"
-                      : "bg-gray-200 text-gray-800"
+                      ? "bg-red-200 text-red-800 dark:bg-red-700 dark:text-red-100"
+                      : "bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-100"
                   }`}
                 >
                   {item.status === "returned"
@@ -293,11 +335,13 @@ export default function BorrowDetailClient({ OrderId }: { OrderId: string }) {
       </div>
 
       {/* หมายเหตุ */}
-      <div className="bg-white p-5 rounded-lg shadow-sm border">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-all">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
           📝 หมายเหตุ
         </h2>
-        <p className="text-gray-700 mb-4">{notes || "ไม่มีหมายเหตุ"}</p>
+        <p className="text-gray-700 dark:text-gray-300">
+          {notes || "ไม่มีหมายเหตุ"}
+        </p>
       </div>
     </div>
   );

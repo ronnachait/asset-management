@@ -146,11 +146,11 @@ export function TableComponent() {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4">
-        <div className="text-sm text-gray-600">
-          <span className="font-semibold text-gray-800">ผลลัพธ์:</span>{" "}
+        <div className="text-sm text-gray-600 dark:text-gray-400">
+          <span className="font-semibold text-gray-800 dark:text-gray-200">ผลลัพธ์:</span>{" "}
           {paginatedData.length} / {Asset.length} รายการ
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center dark:text-gray-400">
           <Input
             className="w-full sm:max-w-xs"
             placeholder="🔍 ค้นหาอุปกรณ์"
@@ -165,7 +165,7 @@ export function TableComponent() {
           />
           <Button
             onClick={handleOpenModal2}
-            className="hidden md:flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow transition-colors duration-200"
+            className="cursor-pointer hidden md:flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow transition-colors duration-200 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
             <QrCode className="w-5 h-5" />
             <span className="text-sm font-medium">Generate QR</span>
@@ -173,9 +173,9 @@ export function TableComponent() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm hidden md:block">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-blue-600 text-white">
+      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm hidden md:block dark:bg-gray-800">
+        <table className="min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-700">
+          <thead className="bg-blue-600 text-white dark:bg-gray-700">
             <tr>
               <th className="p-3">
                 <Checkbox
@@ -195,7 +195,7 @@ export function TableComponent() {
             </tr>
           </thead>
 
-          <tbody className="bg-white divide-y divide-gray-100">
+          <tbody className="bg-white divide-y divide-gray-100 dark:bg-gray-800">
             {paginatedData.map((record, index) => {
               const selected = qrcode.some((item) => item.id === record.id);
               const status = record.current_status ?? "unknown";
@@ -204,7 +204,7 @@ export function TableComponent() {
                 string,
                 [string, string, React.ElementType]
               > = {
-                borrowed: ["ยืมอยู่", "bg-red-100 text-red-700", XCircle],
+                borrowed: ["ยืมอยู่", "bg-red-100 text-red-700 ", XCircle],
                 repair: ["กำลังซ่อม", "bg-yellow-100 text-yellow-800", Wrench],
                 waiting_calibase: [
                   "รอ Calibase",
@@ -223,9 +223,9 @@ export function TableComponent() {
                 <tr
                   key={record.id}
                   className={cn(
-                    "hover:bg-blue-50",
+                    "hover:bg-blue-50 dark:hover:bg-gray-700",
                     selected && "bg-green-100",
-                    record.destroyed === true && "bg-red-100"
+                    record.destroyed === true && "bg-red-100 dark:bg-red-900"
                   )}
                 >
                   <td className="p-3 text-center hidden md:table-cell">
@@ -243,27 +243,27 @@ export function TableComponent() {
                     />
                   </td>
                   <td
-                    className={`p-3  text-gray-900 ${
+                    className={`p-3  text-gray-900 dark:text-white ${
                       isDestroyed ? "line-through" : ""
                     }`}
                   >
                     {startIndex + index + 1}
                   </td>
                   <td
-                    className={`p-3 font-medium text-gray-900 ${
+                    className={`p-3 font-medium text-gray-900 dark:text-white ${
                       isDestroyed ? "line-through" : ""
                     }`}
                   >
                     {record.asset_number}
                   </td>
                   <td
-                    className={`p-3 text-gray-700 ${
+                    className={`p-3 text-gray-700 dark:text-white ${
                       isDestroyed ? "line-through" : ""
                     }`}
                   >
                     {record.asset_name}
                   </td>
-                  <td className="relative group p-3 text-center">
+                  <td className="relative group p-3 text-center dark:text-white">
                     <GenerateQR
                       itemId={record.asset_number}
                       itemwidth={75}
@@ -274,7 +274,7 @@ export function TableComponent() {
                       onClick={() =>
                         handleOpenModal(record.asset_number, record.asset_name)
                       }
-                      className="absolute top-2 right-2 text-xs bg-blue-500 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      className="dark:bg-blue-400 absolute top-2 right-2 text-xs bg-blue-500 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                     >
                       ดู QR
                     </button>
@@ -313,14 +313,14 @@ export function TableComponent() {
                       )}
 
                       {record.destroyed === true && (
-                        <div className="absolute inset-0 bg-red-600/60 rounded-lg flex items-center justify-center text-white font-bold text-xs">
+                        <div className="absolute inset-0 bg-red-600/60 rounded-lg flex items-center justify-center text-white font-bold text-xs dark:text-gray-900 dark:bg-red-600/60">
                           ถูกทำลาย
                         </div>
                       )}
                     </div>
                   </td>
 
-                  <td className="p-3 text-gray-700">
+                  <td className="p-3 text-gray-700 dark:text-white">
                     {record.asset_location ? (
                       <span
                         className={`font-bold flex items-center gap-1 ${
@@ -331,7 +331,7 @@ export function TableComponent() {
                         {record.asset_location}
                       </span>
                     ) : (
-                      <span className="text-gray-400">ไม่พบข้อมูล</span>
+                      <span className="text-gray-400 dark:text-gray-300">ไม่พบข้อมูล</span>
                     )}
                   </td>
                   <td className="p-3 text-center">
