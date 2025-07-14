@@ -30,6 +30,8 @@ import {
   ClipboardList,
   SquarePen,
   Settings,
+  Loader2,
+  PackagePlus,
 } from "lucide-react";
 import { toast } from "sonner";
 type Asset = {
@@ -76,9 +78,13 @@ export default function EditAssetModal({
   });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [dropdown, setDropdown] = useState<dropdown[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
-    if (!form.asset_name || !form.asset_number)
+    setIsLoading(true);
+    if (!form.asset_name || !form.asset_number) {
+      setIsLoading(false);
       return toast.warning("กรุณากรอกข้อมูลให้ครบ");
+    }
 
     const formData = new FormData();
 
@@ -104,6 +110,7 @@ export default function EditAssetModal({
     }
 
     toast.success("แก้ไข asset สําเร็จ");
+    setIsLoading(false);
     onAdd();
     console.log("onAdd");
     console.log(result);
@@ -262,7 +269,7 @@ export default function EditAssetModal({
           </div>
 
           {/* ปุ่ม */}
-          <div className="pt-2 flex justify-end gap-3">
+          <div className="pt-2 flex justify-end gap-3 cursor-pointer">
             <Button
               variant="outline"
               onClick={() => setOpen(false)}
@@ -271,10 +278,18 @@ export default function EditAssetModal({
               ยกเลิก
             </Button>
             <Button
-              className="bg-green-600 hover:bg-green-700 text-white rounded-lg"
+              className="bg-green-600 hover:bg-green-700 text-white rounded-lg cursor-pointer"
+              disabled={isLoading}
               onClick={handleSubmit}
             >
-              บันทึก
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <span className="flex items-center">
+                  <PackagePlus className="w-4 h-4 mr-2" />
+                  <span>อัพเดตข้อมูล</span>
+                </span>
+              )}
             </Button>
           </div>
         </div>

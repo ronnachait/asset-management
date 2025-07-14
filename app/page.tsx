@@ -98,7 +98,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const getHistoryData = (data: BorrowItem[]) => {
     const today = new Date();

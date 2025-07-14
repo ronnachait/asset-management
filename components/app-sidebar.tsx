@@ -40,14 +40,19 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
+    title: "ใบยืมอุปกรณ์",
+    url: "/borrow-items",
+    icon: ClipboardList,
+  },
+  {
     title: "สแกน QR Code",
     url: "/qrcode",
     icon: QrCode,
   },
   {
-    title: "ใบยืมอุปกรณ์",
-    url: "/borrow-items",
-    icon: ClipboardList,
+    title: "รายการอุปกรณ์",
+    url: "/asset-list",
+    icon: PackageCheck,
   },
 ];
 

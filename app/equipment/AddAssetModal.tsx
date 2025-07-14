@@ -9,6 +9,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -18,6 +29,7 @@ import {
   MapPin,
   BadgeInfo,
   ClipboardList,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 type Asset = {
@@ -25,6 +37,12 @@ type Asset = {
   asset_name: string;
   asset_location: string;
   asset_image: File | null;
+};
+
+type dropdown = {
+  id: string;
+  value: string;
+  type: string;
 };
 
 export default function AddAssetModal({
@@ -40,10 +58,15 @@ export default function AddAssetModal({
     asset_image: null,
   });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [dropdown, setDropdown] = useState<dropdown[]>([]);
   const handleSubmit = async () => {
-    if (!form.asset_name || !form.asset_number)
+    setIsLoading(true);
+    if (!form.asset_name || !form.asset_number) {
+      setIsLoading(false);
       return toast.warning("กรุณากรอกข้อมูลให้ครบ");
+    }
+
     onAdd(form);
     const formData = new FormData();
 
@@ -64,10 +87,12 @@ export default function AddAssetModal({
     if (!res.ok) {
       console.log(result.message);
       toast.error("Error :", result.message);
+      setIsLoading(false);
       return;
     }
 
     toast.success("สร้าง asset ใหม่สำเร็จ");
+    setIsLoading(false);
     setForm({
       asset_number: "",
       asset_name: "",
@@ -88,9 +113,23 @@ export default function AddAssetModal({
     }
   };
 
+  const fetchDatadropdown = async (type: string) => {
+    const res = await fetch("/api/dropdown?type=" + type);
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.log(data.message);
+      return;
+    }
+
+    console.log(data);
+    setDropdown(data);
+    return data;
+  };
+
   useEffect(() => {
-    console.log(form);
-  }, [form]);
+    fetchDatadropdown("location");
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -144,16 +183,36 @@ export default function AddAssetModal({
               <MapPin className="w-4 h-4 text-gray-500" />
               สถานที่เก็บอุปกรณ์
             </Label>
-            <Input
-              value={form.asset_location}
-              onChange={(e) =>
-                setForm({ ...form, asset_location: e.target.value })
-              }
-              placeholder="เช่น ห้อง IT, ชั้น 3"
-              className="bg-muted/50 rounded-lg"
-            />
-          </div>
 
+            <Select
+              value={form.asset_location}
+              onValueChange={(e) => setForm({ ...form, asset_location: e })}
+            >
+              <SelectTrigger className="w-full bg-muted/50 rounded-lg">
+                <SelectValue placeholder="เลือกสถานที่" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>เลือกสถานที่</SelectLabel>
+                  {dropdown && dropdown.length > 0 ? (
+                    dropdown.map((item: dropdown) => (
+                      <SelectItem
+                        key={item.id}
+                        value={item.value.toLocaleUpperCase()}
+                        className="capitalize"
+                      >
+                        {item.value.toLocaleUpperCase()}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="ไม่มีข้อมูล" className="capitalize">
+                      ไม่มีข้อมูล
+                    </SelectItem>
+                  )}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
           {/* แนบรูป */}
           <div className="space-y-2">
             <Label className="text-base font-medium flex items-center gap-2">
@@ -179,7 +238,7 @@ export default function AddAssetModal({
           </div>
 
           {/* ปุ่ม */}
-          <div className="pt-2 flex justify-end gap-3">
+          <div className="pt-2 flex justify-end gap-3 cursor-pointer">
             <Button
               variant="outline"
               onClick={() => setOpen(false)}
@@ -188,10 +247,18 @@ export default function AddAssetModal({
               ยกเลิก
             </Button>
             <Button
-              className="bg-green-600 hover:bg-green-700 text-white rounded-lg"
+              className="bg-green-600 hover:bg-green-700 text-white rounded-lg cursor-pointer"
+              disabled={isLoading}
               onClick={handleSubmit}
             >
-              บันทึก
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <span className="flex items-center">
+                  <PackagePlus className="w-4 h-4 mr-2" />
+                  <span>เพิ่มอุปกรณ์</span>
+                </span>
+              )}
             </Button>
           </div>
         </div>

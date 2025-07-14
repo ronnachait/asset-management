@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
+import { toast } from "sonner";
 
 type OrderItem = {
   id: string;
@@ -36,7 +37,8 @@ type CheckItem = {
 export default function ApproveOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
   const [checkedItems, setCheckedItems] = useState<
     Record<string, Record<string, CheckItem>>
   >({});
@@ -70,19 +72,24 @@ export default function ApproveOrders() {
     action: "approve" | "reject",
     type: string
   ) => {
+    if (action === "reject") {
+      setIsLoading2(true);
+    } else {
+      setIsLoading(true);
+    }
+
     if (action === "approve") {
       const allChecked = Object.values(checkedItems[id] || {}).every(
         (v) => v.status === "normal" || v.status === "damaged"
       );
       if (!allChecked) {
-        alert(
-          "กรุณาเลือกสถานะตรวจสอบ (ปกติ หรือ เสียหาย) ของอุปกรณ์ทุกชิ้นก่อนอนุมัติ"
-        );
+        toast.error("กรุณาเลือกสถานะตรวจสอบ (ปกติ หรือ เสียหาย) ของอุปกรณ์");
+        setIsLoading(false);
         return;
       }
     }
 
-    await fetch("/api/borrow/approve-order", {
+    const res = await fetch("/api/borrow/approve-order", {
       method: "POST",
       body: JSON.stringify({
         order_id: id,
@@ -92,6 +99,20 @@ export default function ApproveOrders() {
         note: orderNotes[id] || "",
       }),
     });
+
+    const result = await res.json();
+    if (res.ok) {
+      toast.success(result.message);
+      fetchOrders();
+    } else {
+      toast.error(result.message);
+    }
+    if (action === "reject") {
+      setIsLoading2(true);
+    } else {
+      setIsLoading(true);
+    }
+
     fetchOrders();
   };
 
@@ -281,19 +302,29 @@ export default function ApproveOrders() {
                 <div className="flex flex-col sm:flex-row gap-2 justify-end">
                   <button
                     className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm shadow cursor-pointer"
+                    disabled={isLoading}
                     onClick={() =>
                       updateOrderStatus(order.id, "approve", order.type)
                     }
                   >
-                    ✅ อนุมัติทั้งชุด
+                    {isLoading ? (
+                      <span>⏳ กําลังอนุมัติ...</span>
+                    ) : (
+                      "✅ อนุมัติทั้งชุด"
+                    )}
                   </button>
                   <button
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm shadow cursor-pointer"
+                    disabled={isLoading2}
                     onClick={() =>
                       updateOrderStatus(order.id, "reject", order.type)
                     }
                   >
-                    ❌ ปฏิเสธทั้งชุด
+                    {isLoading2 ? (
+                      <span>⏳ กําลังปฏิเสธ...</span>
+                    ) : (
+                      "❌ ปฏิเสธทั้งชุด"
+                    )}
                   </button>
                 </div>
               ) : (

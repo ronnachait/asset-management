@@ -28,14 +28,20 @@ export function SiteHeader() {
     if (pathname === "/equipment") {
       return { title: "จัดการอุปกรณ์", icon: <PackageCheck size={20} /> };
     }
+    if (pathname === "/asset-list") {
+      return { title: "รายการอุปกรณ์", icon: <PackageCheck size={20} /> };
+    }
     if (pathname === "/qrcode") {
       return { title: "QR Code Scanner", icon: <QrCode size={20} /> };
     }
     if (pathname === "/borrow-items") {
       return { title: "ใบยืมอุปกรณ์", icon: <ClipboardList size={20} /> };
     }
-    // เช็คว่าขึ้นต้นด้วย /borrow-orders
     if (pathname === "/borrow-items" || pathname.startsWith("/borrow-items/")) {
+      return { title: "ใบยืมอุปกรณ์", icon: <ClipboardList size={20} /> };
+    }
+    // เช็คว่าขึ้นต้นด้วย /borrow-orders
+    if (pathname === "/borrow-orders") {
       return { title: "คำขอยืมอุปกรณ์", icon: <FileCheck2 size={20} /> };
     }
     if (pathname === "/transactions" || pathname.startsWith("/transactions")) {

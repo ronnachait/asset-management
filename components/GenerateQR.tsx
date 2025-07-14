@@ -29,4 +29,3 @@ export default function GenerateQR({
     <p>Loading...</p>
   );
 }
-

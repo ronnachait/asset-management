@@ -41,5 +41,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "เกิดข้อผิดพลาด" }, { status: 500 });
   }
 
-  return NextResponse.json({ message: "success" });
+  return NextResponse.json({ message: "success" } , { status: 200 });
 }
