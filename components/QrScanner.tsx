@@ -5,6 +5,7 @@ import { Html5Qrcode } from "html5-qrcode";
 import Image from "next/image";
 import ModalFormOrder from "./ModalFormOrder";
 import { List, X } from "lucide-react";
+import Link from "next/link";
 
 type items = {
   id: string;
@@ -308,7 +309,7 @@ export default function QrScanner({ data, onCancel }: QrScannerProps) {
           asset_location: result.asset_location,
           status: data === "borrow" ? "borrowed" : "available",
           scannedId: id,
-          image: result.image ?? undefined,
+          image: result.asset_image ?? undefined,
         },
       ]);
       setMessage(
@@ -382,7 +383,9 @@ export default function QrScanner({ data, onCancel }: QrScannerProps) {
             {data === "borrow" ? "ยืม" : "คืน"}
           </div>
           <div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">โหมดการทำงาน</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              โหมดการทำงาน
+            </div>
             <div className="text-sm font-semibold text-gray-900 dark:text-white">
               {data === "borrow" ? "ยืมอุปกรณ์" : "คืนอุปกรณ์"}
             </div>
@@ -520,13 +523,29 @@ export default function QrScanner({ data, onCancel }: QrScannerProps) {
           >
             {/* รูปภาพ */}
             <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 shadow-inner flex-shrink-0 bg-white">
-              <Image
-                src={asset.image ?? "/part1.jpg"}
-                alt={`asset ${asset.asset_number}`}
-                width={64}
-                height={64}
-                className="object-cover w-full h-full"
-              />
+              {asset.image ? (
+                <Link
+                  href={asset.image}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    src={asset.image ?? "/part1.jpg"}
+                    alt={`asset ${asset.asset_number}`}
+                    width={64}
+                    height={64}
+                    className="object-cover w-full h-full"
+                  />
+                </Link>
+              ) : (
+                <Image
+                  src={asset.image ?? "/part1.jpg"}
+                  alt={`asset ${asset.asset_number}`}
+                  width={64}
+                  height={64}
+                  className="object-cover w-full h-full"
+                />
+              )}
             </div>
 
             {/* รายละเอียด */}

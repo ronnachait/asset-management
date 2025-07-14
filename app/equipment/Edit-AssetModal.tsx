@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import imageCompression from "browser-image-compression";
 import Image from "next/image";
 import {
   Dialog,
@@ -87,14 +88,31 @@ export default function EditAssetModal({
     }
 
     const formData = new FormData();
-
     formData.append("id", data.id);
     formData.append("asset_number", form.asset_number);
     formData.append("asset_name", form.asset_name);
     formData.append("asset_location", form.asset_location);
 
     if (form.asset_image) {
-      formData.append("asset_image", form.asset_image);
+      try {
+        const compressedFile = await imageCompression(form.asset_image, {
+          maxSizeMB: 1.5, // ไม่ควรเกิน 1.5MB ถ้าอยากคุณภาพสูงหน่อย
+          maxWidthOrHeight: 1024, // ปรับขนาดไม่ให้ใหญ่เกินไป
+          useWebWorker: true,
+        });
+
+        if (compressedFile.size > 5 * 1024 * 1024) {
+          toast.error("รูปภาพหลังบีบอัดยังใหญ่เกิน 5MB");
+          setIsLoading(false);
+          return;
+        }
+        formData.append("asset_image", compressedFile);
+      } catch (error) {
+        console.error("Error compressing image", error);
+        toast.error("บีบอัดรูปไม่สำเร็จ");
+        setIsLoading(false);
+        return;
+      }
     }
 
     const res = await fetch("/api/items-asset/item-update", {
@@ -112,8 +130,6 @@ export default function EditAssetModal({
     toast.success("แก้ไข asset สําเร็จ");
     setIsLoading(false);
     onAdd();
-    console.log("onAdd");
-    console.log(result);
     setForm({
       id: "",
       asset_number: "",

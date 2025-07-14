@@ -2,7 +2,6 @@
 "use client";
 
 import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import { useRef } from "react";
 import Image from "next/image";
 
@@ -29,24 +28,6 @@ export default function StickerLabel({
     link.click();
   };
 
-  const downloadPDF = async () => {
-    const doc = new jsPDF({
-      orientation: "landscape",
-      unit: "mm",
-      format: [50, 30],
-    });
-    const img = new window.Image();
-    img.src = qrDataUrl;
-    img.onload = () => {
-      doc.addImage(img, "PNG", 2, 2, 20, 20);
-      doc.setFontSize(10);
-      doc.text(assetNumber, 25, 12);
-      doc.setFontSize(8);
-      doc.text(label, 25, 18);
-      doc.save(`Label-${assetNumber}.pdf`);
-    };
-  };
-
   return (
     <div className=" space-y-4">
       <div className="flex justify-center items-center">
@@ -56,23 +37,90 @@ export default function StickerLabel({
             width: "200px",
             height: "120px",
             padding: "8px",
-            fontSize: "10px",
             backgroundColor: "white",
-            border: "1px solid #ccc",
+            border: "2px solid #333", // กรอบหลัก
+            borderRadius: "6px", // มุมโค้งเล็กน้อย
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            flexDirection: "row",
+            fontFamily: "sans-serif",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)", // เงาเบาๆ
           }}
         >
-          <Image
-            src={qrDataUrl}
-            alt={`QR ${assetNumber}`}
-            width={80}
-            height={80}
-          />
-          <div style={{ fontWeight: "bold" }}>{assetNumber}</div>
-          <div>{label}</div>
+          {/* ซ้าย: ข้อมูล */}
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start", // จาก space-between → ให้ชิดด้านบน
+              gap: "5px", // ระยะห่างแต่ละบรรทัด
+              paddingRight: "6px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: "bold",
+                color: "#1a1a1a",
+                paddingBottom: "1px",
+                marginBottom: "2px",
+              }}
+            >
+              ASSET - SATT
+            </div>
+
+            <div style={{ fontSize: "10px", lineHeight: "1.1", color: "#333" }}>
+              <strong>เลข:</strong> {assetNumber}
+            </div>
+
+            <div
+              style={{
+                fontSize: "10px",
+                lineHeight: "1.1",
+                wordBreak: "break-word",
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                color: "#333",
+              }}
+            >
+              <strong>ชื่อ:</strong> {label}
+            </div>
+          </div>
+
+          {/* ขวา: QR CODE */}
+          <div
+            style={{
+              width: "70px",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              borderLeft: "1px dashed #aaa",
+              paddingLeft: "6px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "8px",
+                color: "#666",
+                marginBottom: "2px",
+              }}
+            >
+              QR CODE
+            </div>
+            <Image
+              src={qrDataUrl}
+              alt={`QR ${assetNumber}`}
+              width={70}
+              height={70}
+              style={{
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -84,7 +132,7 @@ export default function StickerLabel({
           ดาวน์โหลด PNG
         </button>
         <button
-          onClick={downloadPDF}
+          onClick={() => alert("Coming soon..")}
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
           ดาวน์โหลด PDF
