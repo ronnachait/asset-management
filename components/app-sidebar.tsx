@@ -155,7 +155,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     if (res.ok) {
       const orders: Order[] = result.data;
-      const filtered = orders.filter((order) => order.status !== "done");
+      const filtered = orders.filter(
+        (order) => order.status !== "done" && order.status !== "rejected"
+      );
       setBorrowCount(filtered.length);
     }
   };

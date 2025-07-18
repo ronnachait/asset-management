@@ -2,6 +2,7 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import Image from "next/image";
 import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
+import imageCompression from "browser-image-compression";
 type items = {
   id: string;
   asset_number: string;
@@ -68,20 +69,6 @@ export default function ModalFormOrder({
     setFormData(data);
     console.log("ข้อมูลอุปกรณ์ที่สแกน:", data);
   }, [scannedAssets]);
-
-  // const handleBorrowImageChange = (
-  //   e: ChangeEvent<HTMLInputElement>,
-  //   index: number
-  // ) => {
-  //   if (e.target.files && e.target.files[0]) {
-  //     const file = e.target.files[0];
-  //     setFormData((prev) => {
-  //       const newData = [...prev];
-  //       newData[index].borrowImage = file;
-  //       return newData;
-  //     });
-  //   }
-  // };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -152,7 +139,25 @@ export default function ModalFormOrder({
     });
 
     if (file) {
-      form.append("summary_image", file);
+      try {
+        const compressedFile = await imageCompression(file, {
+          maxSizeMB: 1.5, // ไม่ควรเกิน 1.5MB ถ้าอยากคุณภาพสูงหน่อย
+          maxWidthOrHeight: 1024, // ปรับขนาดไม่ให้ใหญ่เกินไป
+          useWebWorker: true,
+        });
+
+        if (compressedFile.size > 5 * 1024 * 1024) {
+          toast.error("รูปภาพหลังบีบอัดยังใหญ่เกิน 5MB");
+          setIsLoading(false);
+          return;
+        }
+        form.append("summary_image", compressedFile);
+      } catch (error) {
+        console.error("Error compressing image", error);
+        toast.error("บีบอัดรูปไม่สำเร็จ");
+        setIsLoading(false);
+        return;
+      }
     }
 
     // กำหนด URL API ตามสถานะ
@@ -278,6 +283,7 @@ export default function ModalFormOrder({
           <input
             type="file"
             accept="image/*"
+            capture="environment"
             onChange={handleFileChange}
             className="block w-full text-sm border border-gray-300 rounded cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-400"
           />

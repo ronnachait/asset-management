@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -50,7 +50,7 @@ export default function DashboardPage() {
     { date: string; borrowed: number; returned?: number }[]
   >([]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const res = await fetch("/api/dashboard");
     const json = await res.json();
 
@@ -71,7 +71,6 @@ export default function DashboardPage() {
     const pending = result.filter(
       (item: BorrowItem) => item.status === "pending"
     );
-
     const late = result.filter((item: BorrowItem) => {
       if (!item.return_due_date) return false;
       const dueDate = new Date(item.return_due_date);
@@ -82,7 +81,6 @@ export default function DashboardPage() {
         item.status !== "rejected"
       );
     });
-
     const onBorrow = result.filter(
       (item: BorrowItem) => item.status === "borrowed"
     );
@@ -94,7 +92,7 @@ export default function DashboardPage() {
       onBorrow: onBorrow.length,
       pending: pending.length,
     });
-  };
+  }, [setBorrowStats, setHistoryData]);
 
   useEffect(() => {
     fetchData();

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import Image from "next/image";
 import ModalFormOrder from "./ModalFormOrder";
-import { List, X } from "lucide-react";
+import { ImageUp, List, X } from "lucide-react";
 import Link from "next/link";
 
 type items = {
@@ -369,6 +369,26 @@ export default function QrScanner({ data, onCancel }: QrScannerProps) {
     channel.close(); // ปิดทันทีหลังส่ง
   };
 
+  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !html5QrCodeRef.current) {
+      setMessage("❌ ไม่สามารถอ่านไฟล์ได้");
+      return;
+    }
+
+    setMessage("⏳ กำลังวิเคราะห์ภาพ QR...");
+    try {
+      const decodedText = await html5QrCodeRef.current.scanFile(file, true); // true = แสดง preview
+      await onScanSuccess(decodedText);
+    } catch (err) {
+      console.error("❌ ไม่พบ QR ในภาพ", err);
+      setMessage("❌ ไม่พบ QR Code ในภาพ กรุณาเลือกภาพใหม่");
+    } finally {
+      // รีเซ็ตไฟล์เพื่อให้อัปโหลดซ้ำได้
+      e.target.value = "";
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl p-4 sm:p-8 max-w-md w-full space-y-6 shadow-md ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
       {/* Header */}
@@ -421,6 +441,14 @@ export default function QrScanner({ data, onCancel }: QrScannerProps) {
             aria-label="สลับกล้องหน้า-หลัง"
           >
             สลับกล้อง ({facingMode === "environment" ? "หลัง" : "หน้า"})
+          </button>
+
+          <button
+            onClick={() => document.getElementById("qr-upload")?.click()}
+            className="absolute bottom-4 right-4 z-20 w-full sm:w-auto px-2 py-1 bg-blue-600/80 hover:bg-blue-700 text-white rounded font-semibold shadow-lg transition duration-200 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-400 dark:focus:ring-blue-500 flex justify-center items-center gap-2"
+            type="button"
+          >
+            <ImageUp className="w-4 h-4" /> <span>อัพโหลด</span>
           </button>
 
           {scanning ? (
@@ -476,7 +504,13 @@ export default function QrScanner({ data, onCancel }: QrScannerProps) {
             </button>
           )}
         </div>
-
+        <input
+          type="file"
+          accept="image/*"
+          id="qr-upload"
+          onChange={handleUploadImage}
+          className="hidden"
+        />
         {/* ข้อความสถานะ */}
         <p
           className={`text-center text-base font-medium transition-colors min-h-[2.5rem] px-6 py-2 rounded-lg shadow-sm
@@ -484,10 +518,10 @@ export default function QrScanner({ data, onCancel }: QrScannerProps) {
       success
         ? "text-green-700 bg-green-100 shadow-green-300"
         : message.startsWith("⚠️") || message.startsWith("QR Code ไม่ถูกต้อง")
-        ? "text-yellow-700 bg-yellow-100 shadow-yellow-300"
-        : scanning || message.startsWith("กด 'เริ่มสแกน'")
-        ? "text-gray-700 bg-gray-100 shadow-gray-200"
-        : "text-red-700 bg-red-100 shadow-red-300"
+          ? "text-yellow-700 bg-yellow-100 shadow-yellow-300"
+          : scanning || message.startsWith("กด 'เริ่มสแกน'")
+            ? "text-gray-700 bg-gray-100 shadow-gray-200"
+            : "text-red-700 bg-red-100 shadow-red-300"
     }
   `}
           aria-live="polite"

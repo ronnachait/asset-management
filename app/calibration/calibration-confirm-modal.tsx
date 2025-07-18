@@ -22,8 +22,10 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 type Calibration = {
+  id: string;
   asset_id: string;
   next_calibration_date: string;
   last_calibration_date: string | null;
@@ -34,15 +36,18 @@ type Calibration = {
 const ConfirmCalibrationDevice = ({
   onsuccess,
   asset_Id,
+  id,
 }: {
   onsuccess: () => void;
   asset_Id: string;
+  id: string;
 }) => {
   const [open, setOpen] = useState(false);
   const leadtime = ["30", "60", "90"];
   const [checkbox, setCheckbox] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<Calibration>({
+    id: id,
     asset_id: asset_Id,
     next_calibration_date: "",
     last_calibration_date: new Date().toISOString().slice(0, 10),
@@ -52,8 +57,60 @@ const ConfirmCalibrationDevice = ({
 
   const handleSubmit = async () => {
     setLoading(true);
-    onsuccess();
-    setLoading(false);
+    console.log(form);
+
+    if (!form.asset_id || !form.lead_time || !form.last_calibration_date) {
+      toast.warning("กรุณากรอกข้อมูลให้ครบถ้วน");
+      setLoading(false);
+      return;
+    }
+    // แปลง lead_time เป็นตัวเลข
+    const leadTimeDays = parseInt(form.lead_time ?? "0");
+
+    // ใช้ dateStart ถ้า checkbox ถูกติ๊ก, ไม่งั้นใช้ form.last_calibration_date
+    const baseDate = new Date(form.last_calibration_date);
+
+    // คำนวณ next_calibration_date
+    const nextDate = new Date(baseDate);
+    nextDate.setDate(nextDate.getDate() + leadTimeDays);
+
+    // แปลงเป็น yyyy-mm-dd
+    const nextDateStr = nextDate.toISOString().slice(0, 10);
+
+    // เตรียมข้อมูล
+    const payload = {
+      id: form.id,
+      asset_id: form.asset_id,
+      last_calibration_date: baseDate.toISOString().slice(0, 10),
+      next_calibration_date: nextDateStr,
+      status: form.status,
+      lead_time: form.lead_time,
+    };
+
+    const res = await fetch("/api/calibrations/update", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      onsuccess(); // โหลดข้อมูลใหม่
+      toast.success("ยืนยันการสอบเทียบ สำเร็จ");
+      setForm({
+        id: "",
+        asset_id: "",
+        next_calibration_date: "",
+        last_calibration_date: new Date().toISOString().slice(0, 10),
+        status: "pending",
+        lead_time: null,
+      });
+      setOpen(false);
+      setLoading(false);
+    } else {
+      toast.error(`"❌ ยืนยันข้อมูลไม่สำเร็จ", ${await res.text()}`);
+      setLoading(false);
+    }
   };
 
   return (

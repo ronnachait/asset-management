@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion"; // ✅ เพิ่ม animation
-import CalibrationAdd from "./calibration-and-modal";
+import CalibrationAdd from "./calibration-add-modal";
 import { toast } from "sonner";
 
 import {
@@ -235,7 +235,10 @@ export default function CalibrationPage() {
                           {cal.status === "pending" && isDue && (
                             <ConfirmCalibrationDevice
                               asset_Id={cal.asset_id}
-                              onsuccess={() => {}}
+                              id={cal.id}
+                              onsuccess={() => {
+                                handleRefresh();
+                              }}
                             />
                           )}
                           <Dialog>
@@ -335,7 +338,10 @@ export default function CalibrationPage() {
                       {cal.status === "pending" && isDue && (
                         <ConfirmCalibrationDevice
                           asset_Id={cal.asset_id}
-                          onsuccess={() => {}}
+                          id={cal.id}
+                          onsuccess={() => {
+                            handleRefresh();
+                          }}
                         />
                       )}
                       <Dialog>
