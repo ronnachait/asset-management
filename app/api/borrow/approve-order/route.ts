@@ -29,7 +29,11 @@ export async function POST(req: Request) {
   }
 
   const newStatus =
-    action === "approve" ? (type === "returned" ? "done" : type) : "rejected";
+    action === "approve"
+      ? type === "returned"
+        ? "returned"
+        : type
+      : "rejected";
 
   // ✅ อัปเดต status และ admin_note ใน orders
   const { error: orderError } = await supabase
