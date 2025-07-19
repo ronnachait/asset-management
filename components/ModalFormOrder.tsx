@@ -1,8 +1,11 @@
+"use client";
+
 import React, { useState, useEffect, ChangeEvent } from "react";
 import Image from "next/image";
 import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import imageCompression from "browser-image-compression";
+import { createClient } from "@/utils/supabase/client";
 type items = {
   id: string;
   asset_number: string;
@@ -175,6 +178,7 @@ export default function ModalFormOrder({
       if (res.ok) {
         toast.success("ทำรายการสำเร็จ");
         // รีเซ็ตข้อมูลหลังจากส่งสำเร็จ
+        send();
         setFile(null);
         setPreviewUrl("");
         setBorrowDate("");
@@ -193,6 +197,50 @@ export default function ModalFormOrder({
       console.error("เกิดข้อผิดพลาด:", error);
       toast.error(`Error : ${error}`);
     }
+  };
+  const checkAction = async (value: string) => {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("setting")
+      .select("action")
+      .eq("value", value);
+
+    if (error) {
+      console.error("checkAction error:", error);
+      return null;
+    }
+
+    return data && data.length > 0 ? data[0].action : null;
+  };
+
+  const send = async () => {
+    const actionResult = await checkAction("line"); // กำหนด someValue ให้ถูกต้อง
+
+    if (!actionResult) {
+      // ถ้าได้ผลลัพธ์ที่ต้องการ ให้ return ออก
+      console.log("Line OA - OFF");
+      return;
+    }
+    console.log("Line OA - NO");
+    await fetch("/api/notify-group", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        groupId: "C37e940c4dd6fdd4e919e7c04989a3d14", // ใช้ groupId ที่ได้มา
+        user_name: user?.name?.toUpperCase(),
+        user_email: user?.email,
+        user_phone: user?.phone_number,
+        user_team: user?.team?.toUpperCase(),
+        borrowDate: new Date(borrowDate).toLocaleString("th-TH"),
+        returnDate: new Date(returnDate).toLocaleString("th-TH"),
+        asset_quantity: scannedAssets.length,
+        status: status,
+        message: notes,
+        updatedAt: new Date().toLocaleString("th-TH"),
+      }),
+    });
   };
 
   if (!isOpen) return null;
