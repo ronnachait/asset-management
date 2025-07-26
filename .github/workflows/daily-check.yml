@@ -1,0 +1,13 @@
+name: Daily Check and Send Email
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # รันทุกวันตอน 02:00 UTC (09:00 เวลาไทย)
+  workflow_dispatch: # เปิดให้กด Run เองได้จากหน้า GitHub Actions
+
+jobs:
+  send_email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Daily Check API
+        run: curl -X GET https://asset-management-satt.vercel.app/api/daily-check
