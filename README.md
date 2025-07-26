@@ -1,4 +1,3 @@
-
 ### Installation
 
 To begin, install the required dependencies using the following command:
@@ -22,3 +21,5 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+by.ronnachai
